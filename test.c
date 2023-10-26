@@ -6,20 +6,28 @@
 #include "nn.h"
 
 int main() {
-    Layer *layer;
-    layer = create_layer(10, 10, SIGMOID);
-    destroy_layer(layer);
-
     Network *network;
-    network = create_network(3, (int[]){2, 10, 10, 1}, (Activation[]){SIGMOID, SIGMOID, SIGMOID});
-    if (network == NULL) {
-        printf("Network is null\n");
-        return 1;
-    }
+    int layer_sizes[] = {2, 3, 2, 1};
+    Activation activations[] = {RELU, RELU, SIGMOID};
+    network = create_network(3, layer_sizes, activations);
 
-    randomize_weights(network);
-    print_network(network);
+    Matrix *input = create_matrix(1, 2);
 
+    input->data[0] = 0.1;
+    input->data[1] = 0.2;
+
+    Matrix *desired_output = create_matrix(1, 1);
+    desired_output->data[0] = 0.3;
+
+    train(network, input, desired_output, 1000);
+
+    Matrix *output = forward(network, input);
+
+    printf("Output: %f\n", output->data[0]);
+
+    destroy_matrix(output);
+    destroy_matrix(input);
+    destroy_matrix(desired_output);
     destroy_network(network);
 
     return 0;
