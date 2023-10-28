@@ -4,6 +4,20 @@
 
 #include "test.h"
 #include "nn.h"
+#include "data.h"
+
+void test_data_functions() {
+    Dataset *dataset = create_dataset(10);
+    add_data(dataset, create_matrix_from_array(1, 2, (float []){1, 2}), create_matrix_from_array(1, 1, (float []){1}));
+    add_data(dataset, create_matrix_from_array(1, 2, (float []){3, 4}), create_matrix_from_array(1, 1, (float []){0}));
+    add_data(dataset, create_matrix_from_array(1, 2, (float []){5, 6}), create_matrix_from_array(1, 1, (float []){1}));
+    add_data(dataset, create_matrix_from_array(1, 2, (float []){7, 8}), create_matrix_from_array(1, 1, (float []){0}));
+    add_data(dataset, create_matrix_from_array(1, 2, (float []){9, 10}), create_matrix_from_array(1, 1, (float []){1}));
+
+    // print_dataset(dataset);
+
+    destroy_dataset(dataset);
+}
 
 void test_matrix_functions() {
     Matrix *a = create_matrix(2, 2);
@@ -59,6 +73,11 @@ void test_matrix_functions() {
         printf("multiply(a, b) failed\n");
     }
 
+    Matrix *k = create_matrix_from_array(2, 2, (float []){1, 2, 3, 4});
+    if (k->data[0][0] != 1 || k->data[0][1] != 2 || k->data[1][0] != 3 || k->data[1][1] != 4) {
+        printf("create_matrix_from_array(2, 2, (float []){1, 2, 3, 4}) failed\n");
+    }
+
     destroy_matrix(a);
     destroy_matrix(b);
     destroy_matrix(c);
@@ -68,6 +87,7 @@ void test_matrix_functions() {
     destroy_matrix(h);
     destroy_matrix(i);
     destroy_matrix(j);
+    destroy_matrix(k);
 }
 
 void test_nn_functions() {
@@ -77,7 +97,7 @@ void test_nn_functions() {
     network = create_network(3, layer_sizes, activations);
 
     // set seed to make results reproducible
-    srand(33);
+    srand(21);
     randomize_network(network);
 
     Matrix *input = create_matrix(1, 2);
@@ -91,12 +111,13 @@ void test_nn_functions() {
     // print_matrix(output);
     destroy_matrix(output);
 
-    train(network, input, expected, 1000, 1);
+    train(network, input, expected, 1000, 0.01f);
 
     output = forward(network, input);
     // print_matrix(output);
 
     if (output->data[0][0] - expected->data[0][0] > 0.1) {
+        print_matrix(output);
         printf("Training failed\n");
     }
 
@@ -109,6 +130,7 @@ void test_nn_functions() {
 int main() {
     test_matrix_functions();
     test_nn_functions();
+    test_data_functions();
 
     return 0;
 }
