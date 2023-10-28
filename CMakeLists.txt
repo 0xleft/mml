@@ -7,17 +7,13 @@ add_executable(mml main.c
         nn.c
         nn.h
         matrix.c
-        matrix.h
-        data.c
-        data.h)
+        matrix.h)
 
 add_executable(test test.c
         nn.c
         nn.h
         matrix.c
-        matrix.h
-        data.c
-        data.h)
+        matrix.h)
 
 # include math
 target_link_libraries(mml m)
