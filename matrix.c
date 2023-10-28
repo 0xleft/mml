@@ -18,21 +18,6 @@ Matrix *create_matrix(int rows, int cols) {
     return matrix;
 }
 
-// create matrix like this create_matrix(rows, cols, data array like this: {1, 2, 3, 4, 5, 6})
-Matrix *create_matrix_from_array(int rows, int cols, float *data) {
-    Matrix *matrix = malloc(sizeof(Matrix));
-    matrix->rows = rows;
-    matrix->cols = cols;
-    matrix->data = malloc(sizeof(float *) * rows);
-    for (int i = 0; i < rows; i++) {
-        matrix->data[i] = malloc(sizeof(float) * cols);
-        for (int j = 0; j < cols; j++) {
-            matrix->data[i][j] = data[i * cols + j];
-        }
-    }
-    return matrix;
-}
-
 Matrix *transpose(Matrix *matrix) {
     Matrix *result = create_matrix(matrix->cols, matrix->rows);
     for (int i = 0; i < matrix->rows; i++) {
