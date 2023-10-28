@@ -13,6 +13,8 @@ Layer *create_layer(int input_size, int output_size, Activation activation) {
     layer->activation = activation;
     layer->weights = create_matrix(input_size, output_size);
     layer->bias = create_matrix(1, output_size);
+    layer->input = NULL;
+    layer->output = NULL;
     return layer;
 }
 
@@ -47,6 +49,9 @@ Matrix *forward(Network *network, Matrix *input) {
         result = dot(result, layer->weights);
         result = add(result, layer->bias);
         result = apply(result, layer->activation);
+
+        layer->input = input;
+        layer->output = result;
     }
     return result;
 }
@@ -71,58 +76,18 @@ float calc_loss(Matrix *output, Matrix *expected) {
     return sum_result;
 }
 
-Matrix *backward_layer(Layer *layer, Matrix *input, Matrix *loss_gradient) {
-    Matrix *gradient_activation = create_matrix(loss_gradient->rows, loss_gradient->cols);
-    for (int i = 0; i < loss_gradient->rows * loss_gradient->cols; i++) {
-        gradient_activation->data[i] = derivative(loss_gradient->data[i], layer->activation);
-    }
-
-    Matrix *gradient = dot(transpose(loss_gradient), gradient_activation);
-
-    Matrix *gradient_weight = dot(transpose(gradient), transpose(input));
-    Matrix *gradient_bias = multiply_s(gradient, -1.0f);
-    Matrix *gradient_x = transpose(layer->weights);
-
-    Matrix *gradient_x_result = dot(gradient, gradient_x);
-    Matrix *gradient_result = transpose(gradient_x_result);
-
-    // upgrade: the Negative gradient direction
-    Matrix *multiply_weight = multiply_s(gradient_weight, 0.1);
-    destroy_matrix(layer->weights);
-    layer->weights = subtract(layer->weights, multiply_weight);
-    Matrix *multiply_bias = multiply_s(gradient_bias, 0.1);
-    destroy_matrix(layer->bias);
-    layer->bias = subtract(layer->bias, multiply_bias);
-
-    destroy_matrix(multiply_weight);
-    destroy_matrix(multiply_bias);
-    destroy_matrix(gradient_activation);
-    destroy_matrix(gradient);
-    destroy_matrix(gradient_weight);
-    destroy_matrix(gradient_bias);
-    destroy_matrix(gradient_x);
-    destroy_matrix(gradient_x_result);
-    destroy_matrix(gradient_result);
-
-    return gradient_result;
+Matrix *backward_layer(Layer *layer, Matrix *loss) {
+    return NULL;
 }
 
 void train(Network *network, Matrix *input, Matrix *expected, int epochs) {
     for (int i = 0; i < epochs; i++) {
         Matrix *output = forward(network, input);
+        Matrix *loss = calc_loss_gradient(output, expected);
 
-        float loss = calc_loss(output, expected);
-        Matrix *loss_gradient;
-        loss_gradient = calc_loss_gradient(output, expected);
+        print_matrix(loss);
 
         destroy_matrix(output);
-
-        for (int i = 0; i < network->layer_count - 1; i++) {
-            loss_gradient = backward_layer(network->layers[i], input, loss_gradient);
-        }
-
-        destroy_matrix(loss_gradient);
-
-        printf("Loss: %f\n", loss);
+        destroy_matrix(loss);
     }
 }

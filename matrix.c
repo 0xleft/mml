@@ -11,119 +11,112 @@ Matrix *create_matrix(int rows, int cols) {
     Matrix *matrix = malloc(sizeof(Matrix));
     matrix->rows = rows;
     matrix->cols = cols;
-    matrix->data = malloc(sizeof(double) * rows * cols);
+    matrix->data = malloc(sizeof(float *) * rows);
+    for (int i = 0; i < rows; i++) {
+        matrix->data[i] = malloc(sizeof(float) * cols);
+    }
     return matrix;
 }
-
-/// You must free the result yourself and the input too.
 
 Matrix *transpose(Matrix *matrix) {
     Matrix *result = create_matrix(matrix->cols, matrix->rows);
     for (int i = 0; i < matrix->rows; i++) {
         for (int j = 0; j < matrix->cols; j++) {
-            result->data[j * matrix->rows + i] = matrix->data[i * matrix->cols + j];
+            result->data[j][i] = matrix->data[i][j];
         }
     }
-
     return result;
 }
 
+void print_dim(Matrix *matrix) {
+    printf("%d %d\n", matrix->rows, matrix->cols);
+}
+
+// dot product
 Matrix *dot(Matrix *a, Matrix *b) {
-    if (a->cols != b->rows) {
-        return NULL;
-    }
-
     Matrix *result = create_matrix(a->rows, b->cols);
-
     for (int i = 0; i < a->rows; i++) {
         for (int j = 0; j < b->cols; j++) {
-            double sum = 0;
+            float sum = 0;
             for (int k = 0; k < a->cols; k++) {
-                sum += a->data[i * a->cols + k] * b->data[k * b->cols + j];
+                sum += a->data[i][k] * b->data[k][j];
             }
-            result->data[i * result->cols + j] = sum;
+            result->data[i][j] = sum;
         }
     }
+    return result;
+}
 
+Matrix *multiply(Matrix *a, Matrix *b) {
+    Matrix *result = create_matrix(a->rows, a->cols);
+    for (int i = 0; i < a->rows; i++) {
+        for (int j = 0; j < a->cols; j++) {
+            result->data[i][j] = a->data[i][j] * b->data[i][j];
+        }
+    }
     return result;
 }
 
 Matrix *add(Matrix *a, Matrix *b) {
-    if (a->rows != b->rows || a->cols != b->cols) {
-        return NULL;
-    }
-
     Matrix *result = create_matrix(a->rows, a->cols);
-
-    for (int i = 0; i < a->rows * a->cols; i++) {
-        result->data[i] = a->data[i] + b->data[i];
+    for (int i = 0; i < a->rows; i++) {
+        for (int j = 0; j < a->cols; j++) {
+            result->data[i][j] = a->data[i][j] + b->data[i][j];
+        }
     }
-
     return result;
 }
 
 Matrix *multiply_s(Matrix *matrix, float scalar) {
     Matrix *result = create_matrix(matrix->rows, matrix->cols);
-
-    for (int i = 0; i < matrix->rows * matrix->cols; i++) {
-        result->data[i] = matrix->data[i] * scalar;
+    for (int i = 0; i < matrix->rows; i++) {
+        for (int j = 0; j < matrix->cols; j++) {
+            result->data[i][j] = matrix->data[i][j] * scalar;
+        }
     }
-
-    return result;
-}
-
-Matrix *multiply(Matrix *a, Matrix *b) {
-    if (a->rows != b->rows || a->cols != b->cols) {
-        return NULL;
-    }
-
-    Matrix *result = create_matrix(a->rows, a->cols);
-
-    for (int i = 0; i < a->rows * a->cols; i++) {
-        result->data[i] = a->data[i] * b->data[i];
-    }
-
     return result;
 }
 
 Matrix *power(Matrix *matrix, float scalar) {
     Matrix *result = create_matrix(matrix->rows, matrix->cols);
-
-    for (int i = 0; i < matrix->rows * matrix->cols; i++) {
-        result->data[i] = pow(matrix->data[i], scalar);
+    for (int i = 0; i < matrix->rows; i++) {
+        for (int j = 0; j < matrix->cols; j++) {
+            result->data[i][j] = pow(matrix->data[i][j], scalar);
+        }
     }
-
     return result;
 }
 
 float sum(Matrix *matrix) {
     float sum = 0;
-    for (int i = 0; i < matrix->rows * matrix->cols; i++) {
-        sum += matrix->data[i];
+    for (int i = 0; i < matrix->rows; i++) {
+        for (int j = 0; j < matrix->cols; j++) {
+            sum += matrix->data[i][j];
+        }
     }
     return sum;
 }
 
+float activate(float x, Activation activation) {
+    switch (activation) {
+        case SIGMOID:
+            return 1 / (1 + exp(-x));
+        case RELU:
+            return x > 0 ? x : 0;
+        case TANH:
+            return tanh(x);
+        case SOFTMAX:
+            return exp(x);
+    }
+}
+
 Matrix *apply(Matrix *matrix, Activation activation) {
     Matrix *result = create_matrix(matrix->rows, matrix->cols);
-
-    for (int i = 0; i < matrix->rows * matrix->cols; i++) {
-        switch (activation) {
-            case SIGMOID:
-                result->data[i] = 1 / (1 + exp(-matrix->data[i]));
-                break;
-            case RELU:
-                result->data[i] = matrix->data[i] > 0 ? matrix->data[i] : 0;
-                break;
-            case TANH:
-                result->data[i] = tanh(matrix->data[i]);
-                break;
-            case SOFTMAX:
-                result->data[i] = exp(matrix->data[i]);
-                break;
+    for (int i = 0; i < matrix->rows; i++) {
+        for (int j = 0; j < matrix->cols; j++) {
+            result->data[i][j] = activate(matrix->data[i][j], activation);
         }
     }
-
     return result;
 }
 
@@ -140,17 +133,23 @@ float derivative(float x, Activation activation) {
     }
 }
 
+Matrix *derivative_m(Matrix *matrix, Activation activation) {
+    Matrix *result = create_matrix(matrix->rows, matrix->cols);
+    for (int i = 0; i < matrix->rows; i++) {
+        for (int j = 0; j < matrix->cols; j++) {
+            result->data[i][j] = derivative(matrix->data[i][j], activation);
+        }
+    }
+    return result;
+}
+
 Matrix *subtract(Matrix *a, Matrix *b) {
-    if (a->rows != b->rows || a->cols != b->cols) {
-        return NULL;
-    }
-
     Matrix *result = create_matrix(a->rows, a->cols);
-
-    for (int i = 0; i < a->rows * a->cols; i++) {
-        result->data[i] = a->data[i] - b->data[i];
+    for (int i = 0; i < a->rows; i++) {
+        for (int j = 0; j < a->cols; j++) {
+            result->data[i][j] = a->data[i][j] - b->data[i][j];
+        }
     }
-
     return result;
 }
 
@@ -160,10 +159,10 @@ void destroy_matrix(Matrix *matrix) {
 }
 
 void print_matrix(Matrix *matrix) {
-    for (int i = 0; i < matrix->rows * matrix->cols; i++) {
-        printf("%f ", matrix->data[i]);
-        if ((i + 1) % matrix->cols == 0) {
-            printf("\n");
+    for (int i = 0; i < matrix->rows; i++) {
+        for (int j = 0; j < matrix->cols; j++) {
+            printf("%f ", matrix->data[i][j]);
         }
+        printf("\n");
     }
 }

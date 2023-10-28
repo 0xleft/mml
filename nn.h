@@ -12,6 +12,8 @@ struct Layer {
     Matrix *weights;
     Matrix *bias;
     Activation activation;
+    Matrix *input;
+    Matrix *output;
 };
 
 typedef struct Layer Layer;
