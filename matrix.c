@@ -153,16 +153,28 @@ Matrix *subtract(Matrix *a, Matrix *b) {
     return result;
 }
 
+Matrix *copy_matrix(Matrix *matrix) {
+    Matrix *result = create_matrix(matrix->rows, matrix->cols);
+    for (int i = 0; i < matrix->rows; i++) {
+        for (int j = 0; j < matrix->cols; ++j) {
+            result->data[i][j] = matrix->data[i][j];
+        }
+    }
+    return result;
+}
+
 void destroy_matrix(Matrix *matrix) {
     free(matrix->data);
     free(matrix);
 }
 
 void print_matrix(Matrix *matrix) {
+    printf("%d %d\n", matrix->rows, matrix->cols);
     for (int i = 0; i < matrix->rows; i++) {
         for (int j = 0; j < matrix->cols; j++) {
             printf("%f ", matrix->data[i][j]);
         }
         printf("\n");
     }
+    printf("\n");
 }

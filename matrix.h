@@ -39,3 +39,5 @@ void print_matrix(Matrix *matrix);
 void print_dim(Matrix *matrix);
 Matrix *derivative_m(Matrix *matrix, Activation activation);
 Matrix *dot(Matrix *a, Matrix *b);
+Matrix *copy_matrix(Matrix *matrix);
+float sum(Matrix *matrix);

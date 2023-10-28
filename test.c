@@ -76,6 +76,10 @@ void test_nn_functions() {
     Activation activations[] = {RELU, RELU, SIGMOID};
     network = create_network(3, layer_sizes, activations);
 
+    // set seed to make results reproducible
+    srand(33);
+    randomize_network(network);
+
     Matrix *input = create_matrix(1, 2);
     input->data[0][0] = 1;
     input->data[0][1] = 2;
@@ -93,10 +97,10 @@ void test_nn_functions() {
     output = forward(network, input);
     print_matrix(output);
 
-    destroy_network(network);
     destroy_matrix(input);
     destroy_matrix(expected);
     destroy_matrix(output);
+    destroy_network(network);
 }
 
 int main() {
