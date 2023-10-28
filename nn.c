@@ -100,29 +100,33 @@ Matrix *calc_loss_gradient(Matrix *output, Matrix *expected) {
 }
 
 Matrix *backward(Network *network, Matrix *expected) {
-    // maybe dont last layer so it would be -1
+    // yep https://machinelearningmastery.com/implement-backpropagation-algorithm-scratch-python/
     int last_layer_index = network->layer_count - 1;
     for (int i = last_layer_index; i >= 0; i--) {
         Layer *layer = network->layers[i];
 
-        Matrix *delta = create_matrix(layer->input_size, layer->output_size);
+        Matrix *errors = NULL;
 
-        // printf("layer: %d\n", i);
-        // printf("output size %d\n", layer->output_size);
-        // printf("input size %d\n", layer->input_size);
-        // printf("output matrix \n");
-        // print_matrix(layer->output);
-
-        // for each neuron calculate delta
-        for (int j = 0; j < layer->output_size; j++) {
-            float der = derivative(layer->output->data[0][j], layer->activation);
-            float error = expected->data[0][j] - layer->output->data[0][j];
-            float delta_value = der * error;
-            delta->data[0][j] = delta_value;
+        if (i != last_layer_index) {
+            errors = create_matrix(1, layer->output_size);
+            for (int j = 0; j < layer->output_size; j++) {
+                float error = 0.0f;
+                for (int k = 0; k < network->layers[i + 1]->output_size; k++) {
+                    float weight = network->layers[i + 1]->weights->data[j][k];
+                    float delta = network->layers[i + 1]->delta->data[0][k];
+                    error += weight * delta;
+                }
+                errors->data[0][j] = error;
+            }
+        } else {
+            errors = calc_loss_gradient(layer->output, expected);
         }
 
-        // printf("delta matrix %d \n", i);
-        // print_matrix(delta);
+        Matrix *transfer_derivative = derivative_m(layer->output, layer->activation);
+        Matrix *delta = multiply(errors, transfer_derivative);
+
+        destroy_matrix(errors);
+        destroy_matrix(transfer_derivative);
 
         layer->delta = delta;
     }
@@ -134,39 +138,21 @@ void update_weights(Network *network) {
 
         if (layer->delta == NULL) {
             printf("delta is null will not update weights\n");
-            return;
+            continue;
         }
 
-        Matrix *delta = layer->delta;
-        Matrix *input = layer->input;
+        for (int j = 0; j < layer->output_size; j++) {
+            for (int k = 0; k < layer->input_size; k++) {
+                float delta = layer->delta->data[0][j];
+                float input = layer->input->data[0][k];
+                float weight = layer->weights->data[k][j];
+                float new_weight = weight - LEARNING_RATE * delta * input;
+                layer->weights->data[k][j] = new_weight;
+            }
+        }
 
-        Matrix *delta_transposed = transpose(delta);
-        Matrix *input_transposed = transpose(input);
-
-        Matrix *weights_delta = dot(input_transposed, delta);
-        Matrix *bias_delta = copy_matrix(delta);
-
-        Matrix *weights_delta_scaled = multiply_s(weights_delta, LEARNING_RATE);
-        Matrix *bias_delta_scaled = multiply_s(bias_delta, LEARNING_RATE);
-
-        Matrix *weights_new = subtract(layer->weights, weights_delta_scaled);
-        Matrix *bias_new = subtract(layer->bias, bias_delta_scaled);
-
-        printf("weights old\n");
-        print_matrix(layer->weights);
-
-        printf("weights new\n");
-        print_matrix(weights_new);
-
-        layer->weights = weights_new;
-        layer->bias = bias_new;
-
-        destroy_matrix(delta_transposed);
-        destroy_matrix(input_transposed);
-        destroy_matrix(weights_delta);
-        destroy_matrix(bias_delta);
-        destroy_matrix(weights_delta_scaled);
-        destroy_matrix(bias_delta_scaled);
+        destroy_matrix(layer->delta);
+        layer->delta = NULL;
     }
 }
 

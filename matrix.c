@@ -164,11 +164,24 @@ Matrix *copy_matrix(Matrix *matrix) {
 }
 
 void destroy_matrix(Matrix *matrix) {
+    if (matrix == NULL) {
+        printf("matrix is null\n");
+        return;
+    }
+    if (matrix->data == NULL) {
+        printf("data is null\n");
+        return;
+    }
     free(matrix->data);
     free(matrix);
 }
 
 void print_matrix(Matrix *matrix) {
+    if (matrix == NULL) {
+        printf("matrix is null\n");
+        return;
+    }
+
     printf("%d %d\n", matrix->rows, matrix->cols);
     for (int i = 0; i < matrix->rows; i++) {
         for (int j = 0; j < matrix->cols; j++) {
