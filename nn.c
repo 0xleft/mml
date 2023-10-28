@@ -6,8 +6,6 @@
 #include <stdlib.h>
 #include <stddef.h>
 
-#define LEARNING_RATE 0.01f
-
 Layer *create_layer(int input_size, int output_size, Activation activation) {
     Layer *layer = malloc(sizeof(Layer));
     layer->input_size = input_size;
@@ -132,7 +130,7 @@ Matrix *backward(Network *network, Matrix *expected) {
     }
 }
 
-void update_weights(Network *network) {
+void update_weights(Network *network, float learning_rate) {
     for (int i = 0; i < network->layer_count - 1; i++) {
         Layer *layer = network->layers[i];
 
@@ -146,7 +144,7 @@ void update_weights(Network *network) {
                 float delta = layer->delta->data[0][j];
                 float input = layer->input->data[0][k];
                 float weight = layer->weights->data[k][j];
-                float new_weight = weight - LEARNING_RATE * delta * input;
+                float new_weight = weight - learning_rate * delta * input;
                 layer->weights->data[k][j] = new_weight;
             }
         }
@@ -165,16 +163,16 @@ float calc_loss(Matrix *output, Matrix *expected) {
     return result;
 }
 
-void train(Network *network, Matrix *input, Matrix *expected, int epochs) {
+void train(Network *network, Matrix *input, Matrix *expected, int epochs, float learning_rate) {
     for (int i = 0; i < epochs; i++) {
         Matrix *output = forward(network, input);
 
         backward(network, expected);
-        update_weights(network);
+        update_weights(network, learning_rate);
 
         float loss = calc_loss(output, expected);
-        if (i % 100 == 0)
-            printf("loss: %f %d\n", loss, i);
+        // if (i % 100 == 0)
+        //     printf("loss: %f %d\n", loss, i);
 
         destroy_matrix(output);
     }

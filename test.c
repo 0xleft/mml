@@ -88,14 +88,17 @@ void test_nn_functions() {
     expected->data[0][0] = 0.1;
 
     Matrix *output = forward(network, input);
-    print_matrix(output);
+    // print_matrix(output);
     destroy_matrix(output);
 
-    train(network, input, expected, 1000);
-    printf("Training complete\n");
+    train(network, input, expected, 1000, 1);
 
     output = forward(network, input);
-    print_matrix(output);
+    // print_matrix(output);
+
+    if (output->data[0][0] - expected->data[0][0] > 0.1) {
+        printf("Training failed\n");
+    }
 
     destroy_matrix(input);
     destroy_matrix(expected);
