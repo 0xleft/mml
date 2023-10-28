@@ -35,3 +35,4 @@ Matrix *calc_loss_gradient(Matrix *output, Matrix *expected);
 void train(Network *network, Matrix *input, Matrix *expected, int epochs, float learning_rate);
 Matrix *backward(Network *network, Matrix *expected);
 void randomize_network(Network *network);
+void initialize_weights_xavier(Network *network);

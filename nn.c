@@ -19,6 +19,21 @@ Layer *create_layer(int input_size, int output_size, Activation activation) {
     return layer;
 }
 
+// using the xavier initialization weight = U [-(1/sqrt(n)), 1/sqrt(n)] where n is the number of inputs
+void initialize_weights_xavier(Network *network) {
+    for (int i = 0; i < network->layer_count; i++) {
+        int input_size = network->layers[i]->input_size;
+        Layer *layer = network->layers[i];
+
+        float weight = 1.0f / sqrtf(input_size);
+        for (int j = 0; j < layer->weights->rows; j++) {
+            for (int k = 0; k < layer->weights->cols; k++) {
+                layer->weights->data[j][k] = weight;
+            }
+        }
+    }
+}
+
 void randomize_network(Network *network) {
     for (int i = 0; i < network->layer_count; i++) {
         Layer *layer = network->layers[i];
