@@ -25,10 +25,28 @@ void initialize_weights_xavier(Network *network) {
         int input_size = network->layers[i]->input_size;
         Layer *layer = network->layers[i];
 
-        float weight = 1.0f / sqrtf(input_size);
+        float lower_bound = -(1 / sqrt(input_size));
+        float upper_bound = 1 / sqrt(input_size);
         for (int j = 0; j < layer->weights->rows; j++) {
             for (int k = 0; k < layer->weights->cols; k++) {
-                layer->weights->data[j][k] = weight;
+                layer->weights->data[j][k] = (float) rand() / (float) (RAND_MAX / (upper_bound - lower_bound)) + lower_bound;
+            }
+        }
+    }
+}
+
+// weight = U [-(sqrt(6)/sqrt(n + m)), sqrt(6)/sqrt(n + m)] where n is the number of inputs and m is the number of outputs
+void initialize_weights_xavier_norm(Network *network) {
+    for (int i = 0; i < network->layer_count; i++) {
+        int input_size = network->layers[i]->input_size;
+        int output_size = network->layers[i]->output_size;
+        Layer *layer = network->layers[i];
+
+        float lower_bound = -(sqrt(6) / sqrt(input_size + output_size));
+        float upper_bound = sqrt(6) / sqrt(input_size + output_size);
+        for (int j = 0; j < layer->weights->rows; j++) {
+            for (int k = 0; k < layer->weights->cols; k++) {
+                layer->weights->data[j][k] = (float) rand() / (float) (RAND_MAX / (upper_bound - lower_bound)) + lower_bound;
             }
         }
     }
