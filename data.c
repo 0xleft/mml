@@ -36,3 +36,7 @@ void print_dataset(Dataset *dataset) {
         print_matrix(dataset->expected[i]);
     }
 }
+
+Dataset *load_csv(Dataset *dataset) {
+    return NULL;
+}

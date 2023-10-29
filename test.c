@@ -77,31 +77,34 @@ void test_matrix_functions() {
 void test_nn_functions() {
     Network *network;
     int layer_sizes[] = {3, 10, 10, 2};
-    Activation activations[] = {SIGMOID, RELU, RELU};
+    Activation activations[] = {RELU, RELU, SIGMOID};
     network = create_network(3, layer_sizes, activations);
 
     // set seed to make results reproducible
-    // srand(23);
+    // srand(12);
     // randomize_network(network);
-    initialize_weights_xavier(network);
+    initialize_weights_xavier_norm(network);
 
     Matrix *input = create_matrix(1, 2);
     input->data[0][0] = 1;
     input->data[0][1] = 2;
-    input->data[0][2] = 3;
+    input->data[0][2] = 1;
 
     Matrix *expected = create_matrix(1, 2);
-    expected->data[0][0] = 0.1;
-    expected->data[0][1] = 0.9;
+    expected->data[0][0] = 0.3;
+    expected->data[0][1] = 0.5;
 
     Matrix *output = forward(network, input);
     print_matrix(output);
     destroy_matrix(output);
 
-    train(network, input, expected, 100000, 0.1f);
+    train(network, input, expected, 100, 0.1f);
 
     output = forward(network, input);
     print_matrix(output);
+
+    printf("expected: %f %f\n", expected->data[0][0], expected->data[0][1]);
+    printf("output: %f %f\n", output->data[0][0], output->data[0][1]);
 
     if (output->data[0][0] - expected->data[0][0] > 0.1) {
         printf("Training failed\n");

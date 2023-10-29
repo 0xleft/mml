@@ -17,3 +17,5 @@ typedef struct Dataset Dataset;
 
 Dataset *create_dataset(int max_size);
 void destroy_dataset(Dataset *dataset);
+void add_data(Dataset *dataset, Matrix *input, Matrix *expected);
+void print_dataset(Dataset *dataset);
