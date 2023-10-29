@@ -2,7 +2,7 @@
 
 Simple machine learning project written in pure c.
 
-## Done
+## Features
 
 - [x] Basic neural network implementation
 - [x] Back propagation
@@ -17,7 +17,6 @@ Simple machine learning project written in pure c.
 - [ ] Momentum
 - [ ] Config stuff
 - [ ] Remove hard coded RMSProp
-- [ ] Make destroying stuff check for null and also nullify the pointer
 
 ## Usage
 

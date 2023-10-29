@@ -174,6 +174,7 @@ void destroy_matrix(Matrix *matrix) {
     }
     free(matrix->data);
     free(matrix);
+    matrix = NULL;
 }
 
 void print_matrix(Matrix *matrix) {

@@ -106,14 +106,21 @@ void destroy_layer(Layer *layer) {
     if (layer->delta != NULL)
         destroy_matrix(layer->delta);
     free(layer);
+    // nyll
+    layer = NULL;
 }
 
 void destroy_network(Network *network) {
+    if (network == NULL) {
+        printf("network is null\n");
+        return;
+    }
     for (int i = 0; i < network->layer_count; i++) {
         destroy_layer(network->layers[i]);
     }
     free(network->layers);
     free(network);
+    network = NULL;
 }
 
 Matrix *forward(Network *network, Matrix *input) {
