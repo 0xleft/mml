@@ -6,10 +6,27 @@
 #include "nn.h"
 
 void test_dataset_functions() {
+    printf("test_dataset_functions\n");
+    Dataset *dataset = create_dataset(2);
 
+    Matrix *input = create_matrix(1, 2);
+    input->data[0][0] = 1;
+    input->data[0][1] = 2;
+
+    Matrix *expected = create_matrix(1, 2);
+    expected->data[0][0] = 0.3;
+    expected->data[0][1] = 0.5;
+
+    add_data(dataset, input, expected);
+
+    printf("dataset->size: %d\n", dataset->size);
+    print_dataset(dataset);
+
+    destroy_dataset(dataset);
 }
 
 void test_matrix_functions() {
+    printf("test_matrix_functions\n");
     Matrix *a = create_matrix(2, 2);
     Matrix *b = create_matrix(2, 2);
 
@@ -75,6 +92,7 @@ void test_matrix_functions() {
 }
 
 void test_nn_functions() {
+    printf("test_nn_functions\n");
     Network *network;
     int layer_sizes[] = {3, 10, 10, 2};
     Activation activations[] = {RELU, RELU, SIGMOID};
@@ -95,13 +113,11 @@ void test_nn_functions() {
     expected->data[0][1] = 0.5;
 
     Matrix *output = forward(network, input);
-    print_matrix(output);
     destroy_matrix(output);
 
     train(network, input, expected, 100, 0.1f);
 
     output = forward(network, input);
-    print_matrix(output);
 
     printf("expected: %f %f\n", expected->data[0][0], expected->data[0][1]);
     printf("output: %f %f\n", output->data[0][0], output->data[0][1]);

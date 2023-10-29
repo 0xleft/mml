@@ -5,6 +5,7 @@
 //
 #include <stddef.h>
 #include "matrix.h"
+#include "data.h"
 
 struct Layer {
     int input_size;
