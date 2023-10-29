@@ -213,17 +213,29 @@ float calc_loss(Matrix *output, Matrix *expected) {
     return result;
 }
 
-void train(Network *network, Matrix *input, Matrix *expected, int epochs, float learning_rate) {
+float train_input(Network *network, Matrix *input, Matrix *expected, float learning_rate) {
+    Matrix *output = forward(network, input);
+    backward(network, expected);
+    update_weights(network, learning_rate);
+    float loss = calc_loss(output, expected);
+
+    destroy_matrix(output);
+
+    return loss;
+}
+
+void train_dataset(Network *network, Dataset *dataset, int epochs, float learning_rate) {
     for (int i = 0; i < epochs; i++) {
-        Matrix *output = forward(network, input);
+        float total_loss = 0.0f;
 
-        backward(network, expected);
-        update_weights(network, learning_rate);
+        for (int j = 0; j < dataset->size; j++) {
+            Matrix *input = dataset->inputs[j];
+            Matrix *expected = dataset->expected[j];
+            float loss = train_input(network, input, expected, learning_rate);
+            total_loss += loss;
+        }
 
-        float loss = calc_loss(output, expected);
-        // if (i % 100000 == 0)
-        //     printf("loss: %f %d decay rate: %f\n", loss, i, network->layers[0]->decay_rate);
-
-        destroy_matrix(output);
+        if (i % 1000 == 0)
+            printf("epoch %d loss %f\n", i, total_loss);
     }
 }

@@ -8,6 +8,62 @@
 #define RED "\033[0;31m"
 #define RESET "\033[0m"
 
+void test_dataset_plus_nn_functions() {
+    printf("test_dataset_plus_nn_functions\n");
+    Dataset *dataset = create_dataset(2);
+
+    Matrix *input1 = create_matrix(1, 2);
+    input1->data[0][0] = 1;
+    input1->data[0][1] = 2;
+
+    Matrix *expected1 = create_matrix(1, 2);
+    expected1->data[0][0] = 0.3f;
+    expected1->data[0][1] = 0.5f;
+
+    Matrix *input2 = create_matrix(1, 2);
+    input2->data[0][0] = 3;
+    input2->data[0][1] = 4;
+
+    Matrix *expected2 = create_matrix(1, 2);
+    expected2->data[0][0] = 0.7f;
+    expected2->data[0][1] = 0.9f;
+
+    add_data(dataset, input1, expected1);
+    add_data(dataset, input2, expected2);
+
+    printf("dataset->size: %d\n", dataset->size);
+    print_dataset(dataset);
+
+    Network *network;
+    int layer_sizes[] = {2, 10, 10, 2};
+    Activation activations[] = {RELU, RELU, SIGMOID};
+    network = create_network(3, layer_sizes, activations);
+
+    // set seed to make results reproducible
+    // srand(12);
+    // randomize_network(network);
+    initialize_weights_xavier_norm(network);
+
+    Matrix *output = forward(network, input1);
+    destroy_matrix(output);
+
+    train_dataset(network, dataset, 10000, 0.1f);
+
+    output = forward(network, input1);
+
+    printf("expected: %f %f\n", expected1->data[0][0], expected1->data[0][1]);
+    printf("output: %f %f\n", output->data[0][0], output->data[0][1]);
+
+    output = forward(network, input2);
+
+    printf("expected: %f %f\n", expected2->data[0][0], expected2->data[0][1]);
+    printf("output: %f %f\n", output->data[0][0], output->data[0][1]);
+
+    destroy_matrix(output);
+    destroy_dataset(dataset);
+    destroy_network(network);
+}
+
 void test_dataset_functions() {
     printf("test_dataset_functions\n");
     Dataset *dataset = create_dataset(2);
@@ -17,8 +73,8 @@ void test_dataset_functions() {
     input->data[0][1] = 2;
 
     Matrix *expected = create_matrix(1, 2);
-    expected->data[0][0] = 0.3;
-    expected->data[0][1] = 0.5;
+    expected->data[0][0] = 0.3f;
+    expected->data[0][1] = 0.5f;
 
     add_data(dataset, input, expected);
 
@@ -112,13 +168,15 @@ void test_nn_functions() {
     input->data[0][2] = 1;
 
     Matrix *expected = create_matrix(1, 2);
-    expected->data[0][0] = 0.3;
-    expected->data[0][1] = 0.5;
+    expected->data[0][0] = 0.3f;
+    expected->data[0][1] = 0.5f;
 
     Matrix *output = forward(network, input);
     destroy_matrix(output);
 
-    train(network, input, expected, 100, 0.1f);
+    for (int i = 0; i < 1000; i++) {
+        train_input(network, input, expected, 0.1f);
+    }
 
     output = forward(network, input);
 
@@ -139,6 +197,8 @@ int main() {
     test_matrix_functions();
     test_nn_functions();
     test_dataset_functions();
+    test_dataset_plus_nn_functions();
+
 
     return 0;
 }

@@ -7,6 +7,7 @@ Simple machine learning project written in pure c.
 - [x] Basic neural network implementation
 - [x] Back propagation
 - [x] RMSProp optimizer
+- [x] Datasets
 
 ## TODO
 
@@ -14,7 +15,9 @@ Simple machine learning project written in pure c.
 - [ ] Adam optimizer
 - [ ] Dropout
 - [ ] Momentum
-- [ ] Datasets
+- [ ] Config stuff
+- [ ] Remove hard coded RMSProp
+- [ ] Make destroying stuff check for null and also nullify the pointer
 
 ## Usage
 
