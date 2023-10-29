@@ -125,8 +125,8 @@ Matrix *forward(Network *network, Matrix *input) {
         result = apply(result, layer->activation);
 
         // duplicate matrix
-        layer->input = input;
-        layer->output = result;
+        layer->input = copy_matrix(input);
+        layer->output = copy_matrix(result);
     }
     return result;
 }
@@ -221,8 +221,8 @@ void train(Network *network, Matrix *input, Matrix *expected, int epochs, float 
         update_weights(network, learning_rate);
 
         float loss = calc_loss(output, expected);
-        if (i % 100000 == 0)
-            printf("loss: %f %d decay rate: %f\n", loss, i, network->layers[0]->decay_rate);
+        // if (i % 100000 == 0)
+        //     printf("loss: %f %d decay rate: %f\n", loss, i, network->layers[0]->decay_rate);
 
         destroy_matrix(output);
     }
