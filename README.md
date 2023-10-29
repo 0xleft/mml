@@ -14,6 +14,7 @@ Simple machine learning project written in pure c.
 - [ ] Adam optimizer
 - [ ] Dropout
 - [ ] Momentum
+- [ ] Datasets
 
 ## Usage
 
