@@ -210,9 +210,9 @@ void test_nn_functions() {
 
 int main() {
     test_matrix_functions();
-    // test_nn_functions();
-    // test_dataset_functions();
-    // test_dataset_plus_nn_functions();
+    test_nn_functions();
+    test_dataset_functions();
+    test_dataset_plus_nn_functions();
 
     return 0;
 }
