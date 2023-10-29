@@ -7,7 +7,7 @@
 #include "matrix.h"
 #include "data.h"
 
-struct Layer {
+struct DenseLayer {
     int input_size;
     int output_size;
     Matrix *weights;
@@ -20,18 +20,18 @@ struct Layer {
     float decay_rate;
 };
 
-typedef struct Layer Layer;
+typedef struct DenseLayer DenseLayer;
 
 struct Network {
     int layer_count;
-    struct Layer **layers;
+    struct DenseLayer **layers;
 };
 
 typedef struct Network Network;
 
-Layer *create_layer(int input_size, int output_size, Activation activation, float epsilon, float decay_rate);
+DenseLayer *create_layer(int input_size, int output_size, Activation activation, float epsilon, float decay_rate);
 Network *create_network(int layer_count, int *layer_sizes, Activation *activations);
-void destroy_layer(Layer *layer);
+void destroy_layer(DenseLayer *layer);
 void destroy_network(Network *network);
 Matrix *forward(Network *network, Matrix *input);
 Matrix *calc_loss_gradient(Matrix *output, Matrix *expected);
