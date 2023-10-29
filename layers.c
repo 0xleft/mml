@@ -1,0 +1,54 @@
+//
+// Created by plusleft on 10/29/2023.
+//
+
+#include "layers.h"
+
+DenseLayer *create_dense_layer(int input_size, int output_size, Activation activation, float epsilon, float decay_rate) {
+    DenseLayer *layer = malloc(sizeof(DenseLayer));
+    layer->input_size = input_size;
+    layer->output_size = output_size;
+    layer->activation = activation;
+    layer->weights = create_matrix(input_size, output_size);
+    layer->bias = create_matrix(1, output_size);
+    layer->input = NULL;
+    layer->output = NULL;
+    layer->delta = NULL;
+    layer->epsilon = epsilon;
+    layer->decay_rate = decay_rate;
+    return layer;
+}
+
+void destroy_dense_layer(DenseLayer *layer) {
+    if (layer == NULL) {
+        return;
+    }
+    destroy_matrix(layer->weights);
+    destroy_matrix(layer->bias);
+    if (layer->input != NULL)
+        destroy_matrix(layer->input);
+    if (layer->output != NULL)
+        destroy_matrix(layer->output);
+    if (layer->delta != NULL)
+        destroy_matrix(layer->delta);
+    free(layer);
+    layer = NULL;
+}
+
+Matrix *forward_dense(DenseLayer *layer, Matrix *input) {
+    Matrix *result = input;
+    result = dot(result, layer->weights);
+    result = add(result, layer->bias);
+    result = apply(result, layer->activation);
+    return result;
+}
+
+// TODO
+void backward_dense(DenseLayer *layer, Matrix errors) {
+    return;
+}
+
+// TODO
+void update_dense(DenseLayer *layer, float learning_rate) {
+    return;
+}

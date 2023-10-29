@@ -10,21 +10,6 @@
 #define EPSILON 0.000000001f
 #define DECAY_RATE 0.00001f
 
-DenseLayer *create_layer(int input_size, int output_size, Activation activation, float epsilon, float decay_rate) {
-    DenseLayer *layer = malloc(sizeof(DenseLayer));
-    layer->input_size = input_size;
-    layer->output_size = output_size;
-    layer->activation = activation;
-    layer->weights = create_matrix(input_size, output_size);
-    layer->bias = create_matrix(1, output_size);
-    layer->input = NULL;
-    layer->output = NULL;
-    layer->delta = NULL;
-    layer->epsilon = epsilon;
-    layer->decay_rate = decay_rate;
-    return layer;
-}
-
 // using the xavier initialization weight = U [-(1/sqrt(n)), 1/sqrt(n)] where n is the number of inputs
 void initialize_weights_xavier(Network *network) {
     for (int i = 0; i < network->layer_count; i++) {

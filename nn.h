@@ -6,25 +6,12 @@
 #include <stddef.h>
 #include "matrix.h"
 #include "data.h"
-
-struct DenseLayer {
-    int input_size;
-    int output_size;
-    Matrix *weights;
-    Matrix *bias;
-    Activation activation;
-    Matrix *input;
-    Matrix *output;
-    Matrix *delta;
-    float epsilon;
-    float decay_rate;
-};
-
-typedef struct DenseLayer DenseLayer;
+#include "layers.h"
 
 struct Network {
     int layer_count;
-    struct DenseLayer **layers;
+    LayerType *layer_types;
+    Layer *layers;
 };
 
 typedef struct Network Network;
