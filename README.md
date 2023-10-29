@@ -18,7 +18,6 @@ Simple machine learning project written in pure c.
 - [ ] Config stuff
 - [ ] Remove hard coded RMSProp
 - [ ] Implement different layer types
-- [ ] Fix back propagation
 
 ## Usage
 
