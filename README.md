@@ -6,11 +6,11 @@ Simple machine learning project written in pure c.
 
 - [x] Basic neural network implementation
 - [x] Back propagation
+- [x] RMSProp optimizer
 
 ## TODO
 
 - [ ] Convolutional neural network
-- [ ] RMSProp optimizer
 - [ ] Adam optimizer
 - [ ] Dropout
 

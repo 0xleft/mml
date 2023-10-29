@@ -72,27 +72,28 @@ void test_matrix_functions() {
 
 void test_nn_functions() {
     Network *network;
-    int layer_sizes[] = {2, 3, 4, 1};
-    Activation activations[] = {SIGMOID, RELU, RELU};
+    int layer_sizes[] = {2, 10, 10, 2};
+    Activation activations[] = {SIGMOID, SIGMOID, SIGMOID};
     network = create_network(3, layer_sizes, activations);
 
     // set seed to make results reproducible
     // srand(23);
     // randomize_network(network);
-    initialize_weights_xavier_norm(network);
+    initialize_weights_xavier(network);
 
     Matrix *input = create_matrix(1, 2);
     input->data[0][0] = 1;
     input->data[0][1] = 2;
 
-    Matrix *expected = create_matrix(1, 1);
-    expected->data[0][0] = 0.9f;
+    Matrix *expected = create_matrix(1, 2);
+    expected->data[0][0] = 0.1;
+    expected->data[0][1] = 0.9;
 
     Matrix *output = forward(network, input);
     print_matrix(output);
     destroy_matrix(output);
 
-    train(network, input, expected, 10000, 0.1f);
+    train(network, input, expected, 100000000, 1.0f);
 
     output = forward(network, input);
     print_matrix(output);

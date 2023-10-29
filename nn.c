@@ -6,7 +6,10 @@
 #include <stdlib.h>
 #include <stddef.h>
 
-Layer *create_layer(int input_size, int output_size, Activation activation) {
+#define EPSILON 0.000000001f
+#define DECAY_RATE 0.00001f
+
+Layer *create_layer(int input_size, int output_size, Activation activation, float epsilon, float decay_rate) {
     Layer *layer = malloc(sizeof(Layer));
     layer->input_size = input_size;
     layer->output_size = output_size;
@@ -16,6 +19,8 @@ Layer *create_layer(int input_size, int output_size, Activation activation) {
     layer->input = NULL;
     layer->output = NULL;
     layer->delta = NULL;
+    layer->epsilon = epsilon;
+    layer->decay_rate = decay_rate;
     return layer;
 }
 
@@ -73,7 +78,7 @@ Network *create_network(int layer_count, int *layer_sizes, Activation *activatio
     network->layer_count = layer_count;
     network->layers = malloc(sizeof(Layer *) * layer_count);
     for (int i = 0; i < layer_count; i++) {
-        network->layers[i] = create_layer(layer_sizes[i], layer_sizes[i + 1], activations[i]);
+        network->layers[i] = create_layer(layer_sizes[i], layer_sizes[i + 1], activations[i], EPSILON, DECAY_RATE);
     }
     return network;
 }
@@ -94,6 +99,12 @@ void destroy_layer(Layer *layer) {
     destroy_matrix(layer->weights);
     destroy_matrix(layer->bias);
     // maybe free input, output and delta?
+    if (layer->input != NULL)
+        destroy_matrix(layer->input);
+    if (layer->output != NULL)
+        destroy_matrix(layer->output);
+    if (layer->delta != NULL)
+        destroy_matrix(layer->delta);
     free(layer);
 }
 
@@ -177,13 +188,19 @@ void update_weights(Network *network, float learning_rate) {
                 float delta = layer->delta->data[0][j];
                 float input = layer->input->data[0][k];
                 float weight = layer->weights->data[k][j];
-                float new_weight = weight - learning_rate * delta * input;
+
+                float learning_rate_adjusted = learning_rate / (1 + layer->decay_rate);
+
+                float new_weight = weight - learning_rate_adjusted * delta * input;
                 layer->weights->data[k][j] = new_weight;
             }
         }
 
         destroy_matrix(layer->delta);
         layer->delta = NULL;
+
+        // update decay rate
+        layer->decay_rate += layer->epsilon;
     }
 }
 
@@ -204,8 +221,8 @@ void train(Network *network, Matrix *input, Matrix *expected, int epochs, float 
         update_weights(network, learning_rate);
 
         float loss = calc_loss(output, expected);
-        // if (i % 100 == 0)
-        //     printf("loss: %f %d\n", loss, i);
+        if (i % 100000 == 0)
+            printf("loss: %f %d decay rate: %f\n", loss, i, network->layers[0]->decay_rate);
 
         destroy_matrix(output);
     }

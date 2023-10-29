@@ -15,6 +15,8 @@ struct Layer {
     Matrix *input;
     Matrix *output;
     Matrix *delta;
+    float epsilon;
+    float decay_rate;
 };
 
 typedef struct Layer Layer;
@@ -26,7 +28,7 @@ struct Network {
 
 typedef struct Network Network;
 
-Layer *create_layer(int input_size, int output_size, Activation activation);
+Layer *create_layer(int input_size, int output_size, Activation activation, float epsilon, float decay_rate);
 Network *create_network(int layer_count, int *layer_sizes, Activation *activations);
 void destroy_layer(Layer *layer);
 void destroy_network(Network *network);
