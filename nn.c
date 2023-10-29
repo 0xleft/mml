@@ -197,7 +197,8 @@ Matrix *backward(Network *network, Matrix *expected) {
 }
 
 void update_weights(Network *network, float learning_rate) {
-    for (int i = 0; i < network->layer_count - 1; i++) {
+    for (int i = 0; i < network->layer_count; i++) {
+        printf("updating weights for layer %d\n", i);
         Layer *layer = network->layers[i];
 
         if (layer->delta == NULL) {
@@ -215,6 +216,11 @@ void update_weights(Network *network, float learning_rate) {
 
                 float new_weight = weight - learning_rate_adjusted * delta * input;
                 layer->weights->data[k][j] = new_weight;
+
+                // update bias
+                float bias = layer->bias->data[0][j];
+                float new_bias = bias - learning_rate_adjusted * delta;
+                layer->bias->data[0][j] = new_bias;
             }
         }
 
