@@ -5,6 +5,10 @@
 #include "test.h"
 #include "nn.h"
 
+void test_dataset_functions() {
+
+}
+
 void test_matrix_functions() {
     Matrix *a = create_matrix(2, 2);
     Matrix *b = create_matrix(2, 2);
@@ -72,8 +76,8 @@ void test_matrix_functions() {
 
 void test_nn_functions() {
     Network *network;
-    int layer_sizes[] = {2, 10, 10, 2};
-    Activation activations[] = {SIGMOID, SIGMOID, SIGMOID};
+    int layer_sizes[] = {3, 10, 10, 2};
+    Activation activations[] = {SIGMOID, RELU, RELU};
     network = create_network(3, layer_sizes, activations);
 
     // set seed to make results reproducible
@@ -84,6 +88,7 @@ void test_nn_functions() {
     Matrix *input = create_matrix(1, 2);
     input->data[0][0] = 1;
     input->data[0][1] = 2;
+    input->data[0][2] = 3;
 
     Matrix *expected = create_matrix(1, 2);
     expected->data[0][0] = 0.1;
@@ -93,7 +98,7 @@ void test_nn_functions() {
     print_matrix(output);
     destroy_matrix(output);
 
-    train(network, input, expected, 100000000, 1.0f);
+    train(network, input, expected, 100000, 0.1f);
 
     output = forward(network, input);
     print_matrix(output);
@@ -111,6 +116,7 @@ void test_nn_functions() {
 int main() {
     test_matrix_functions();
     test_nn_functions();
+    test_dataset_functions();
 
     return 0;
 }
