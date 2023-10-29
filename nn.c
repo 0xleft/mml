@@ -198,7 +198,6 @@ Matrix *backward(Network *network, Matrix *expected) {
 
 void update_weights(Network *network, float learning_rate) {
     for (int i = 0; i < network->layer_count; i++) {
-        printf("updating weights for layer %d\n", i);
         Layer *layer = network->layers[i];
 
         if (layer->delta == NULL) {
@@ -263,7 +262,7 @@ void train_dataset(Network *network, Dataset *dataset, int epochs, float learnin
             total_loss += loss;
         }
 
-        if (i % 10 == 0)
+        if (i % 1000 == 0)
             printf("epoch %d loss %f\n", i, total_loss);
     }
 }

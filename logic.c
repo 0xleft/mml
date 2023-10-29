@@ -6,9 +6,9 @@
 
 void and() {
     Network *network;
-    int layer_sizes[] = {2, 4, 6, 1};
-    Activation activations[] = {RELU, RELU, RELU};
-    network = create_network(3, layer_sizes, activations);
+    int layer_sizes[] = {2, 1};
+    Activation activations[] = {SIGMOID};
+    network = create_network(1, layer_sizes, activations);
 
     srand(66);
     initialize_weights_xavier_norm(network);
@@ -31,11 +31,11 @@ void and() {
     add_data(dataset, input3, expected3);
     add_data(dataset, input4, expected4);
 
-    print_neural_network(network);
+    // print_neural_network(network);
 
-    train_dataset(network, dataset, 100, 0.00001f);
+    train_dataset(network, dataset, 10000, 1.0f);
 
-    print_neural_network(network);
+    // print_neural_network(network);
 
     destroy_network(network);
     destroy_dataset(dataset);
