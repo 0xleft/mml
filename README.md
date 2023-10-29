@@ -13,6 +13,7 @@ Simple machine learning project written in pure c.
 - [ ] Convolutional neural network
 - [ ] Adam optimizer
 - [ ] Dropout
+- [ ] Momentum
 
 ## Usage
 
