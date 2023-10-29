@@ -13,3 +13,4 @@ cmake-build-debug/
 .idea/
 test
 mml
+logic_gates

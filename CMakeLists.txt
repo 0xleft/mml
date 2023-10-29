@@ -19,6 +19,15 @@ add_executable(test test.c
         data.c
         data.h)
 
+add_executable(logic_gates logic.c
+        nn.c
+        nn.h
+        matrix.c
+        matrix.h
+        data.c
+        data.h)
+
 # include math
 target_link_libraries(mml m)
 target_link_libraries(test m)
+target_link_libraries(logic_gates m)

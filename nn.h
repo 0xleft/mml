@@ -42,3 +42,4 @@ Matrix *backward(Network *network, Matrix *expected);
 void randomize_network(Network *network);
 void initialize_weights_xavier(Network *network);
 void initialize_weights_xavier_norm(Network *network);
+void print_neural_network(Network *network);

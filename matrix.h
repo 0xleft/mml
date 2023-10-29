@@ -41,3 +41,4 @@ Matrix *derivative_m(Matrix *matrix, Activation activation);
 Matrix *dot(Matrix *a, Matrix *b);
 Matrix *copy_matrix(Matrix *matrix);
 float sum(Matrix *matrix);
+Matrix *create_matrix_from_array(int rows, int cols, float *data);

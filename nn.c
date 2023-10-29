@@ -40,6 +40,21 @@ void initialize_weights_xavier(Network *network) {
     }
 }
 
+void print_neural_network(Network *network) {
+    printf("Neural Network\n");
+    for (int i = 0; i < network->layer_count; i++) {
+        Layer *layer = network->layers[i];
+        printf("Layer %d\n", i);
+        printf("input size: %d\n", layer->input_size);
+        printf("output size: %d\n", layer->output_size);
+        printf("activation: %d\n", layer->activation);
+        printf("weights:\n");
+        print_matrix(layer->weights);
+        printf("bias:\n");
+        print_matrix(layer->bias);
+    }
+}
+
 // weight = U [-(sqrt(6)/sqrt(n + m)), sqrt(6)/sqrt(n + m)] where n is the number of inputs and m is the number of outputs
 void initialize_weights_xavier_norm(Network *network) {
     for (int i = 0; i < network->layer_count; i++) {
@@ -242,7 +257,7 @@ void train_dataset(Network *network, Dataset *dataset, int epochs, float learnin
             total_loss += loss;
         }
 
-        if (i % 1000 == 0)
+        if (i % 10 == 0)
             printf("epoch %d loss %f\n", i, total_loss);
     }
 }

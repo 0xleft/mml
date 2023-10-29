@@ -17,11 +17,19 @@ Simple machine learning project written in pure c.
 - [ ] Momentum
 - [ ] Config stuff
 - [ ] Remove hard coded RMSProp
+- [ ] Implement different layer types
+- [ ] Fix back propagation
 
 ## Usage
 
 ```bash
 ./run.sh
+```
+
+## Logic gates
+
+```bash
+./run.sh logic
 ```
 
 ## Testing

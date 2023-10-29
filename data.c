@@ -32,7 +32,9 @@ void add_data(Dataset *dataset, Matrix *input, Matrix *expected) {
 
 void print_dataset(Dataset *dataset) {
     for (int i = 0; i < dataset->size; i++) {
+        printf("Input:\n");
         print_matrix(dataset->inputs[i]);
+        printf("Expected:\n");
         print_matrix(dataset->expected[i]);
     }
 }

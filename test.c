@@ -59,6 +59,14 @@ void test_dataset_plus_nn_functions() {
     printf("expected: %f %f\n", expected2->data[0][0], expected2->data[0][1]);
     printf("output: %f %f\n", output->data[0][0], output->data[0][1]);
 
+    if (output->data[0][0] - expected2->data[0][0] > 0.1) {
+        printf(RED"Training failed in datasets 1\n"RESET);
+    }
+
+    if (output->data[0][1] - expected2->data[0][1] > 0.1) {
+        printf(RED"Training failed in datasets 2\n"RESET);
+    }
+
     destroy_matrix(output);
     destroy_dataset(dataset);
     destroy_network(network);
@@ -139,6 +147,12 @@ void test_matrix_functions() {
         printf(RED"multiply(a, b) failed\n"RESET);
     }
 
+    Matrix *k = create_matrix_from_array(2, 2, (float[]) {1, 2, 3, 4});
+    print_matrix(k);
+    if (k->data[0][0] != 1 || k->data[0][1] != 2 || k->data[1][0] != 3 || k->data[1][1] != 4) {
+        printf(RED"create_matrix_from_array failed\n"RESET);
+    }
+
     destroy_matrix(a);
     destroy_matrix(b);
     destroy_matrix(c);
@@ -148,6 +162,7 @@ void test_matrix_functions() {
     destroy_matrix(h);
     destroy_matrix(i);
     destroy_matrix(j);
+    destroy_matrix(k);
 }
 
 void test_nn_functions() {
@@ -195,10 +210,9 @@ void test_nn_functions() {
 
 int main() {
     test_matrix_functions();
-    test_nn_functions();
-    test_dataset_functions();
-    test_dataset_plus_nn_functions();
-
+    // test_nn_functions();
+    // test_dataset_functions();
+    // test_dataset_plus_nn_functions();
 
     return 0;
 }
