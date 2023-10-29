@@ -206,3 +206,34 @@ void print_matrix(Matrix *matrix) {
     }
     printf("\n");
 }
+
+/// MATRIX 3d
+
+Matrix3D *create_matrix_3d(int rows, int cols, int depth) {
+    Matrix3D *matrix = malloc(sizeof(Matrix3D));
+    matrix->rows = rows;
+    matrix->cols = cols;
+    matrix->depth = depth;
+    matrix->data = malloc(sizeof(float **) * rows);
+    for (int i = 0; i < rows; i++) {
+        matrix->data[i] = malloc(sizeof(float *) * cols);
+        for (int j = 0; j < cols; j++) {
+            matrix->data[i][j] = malloc(sizeof(float) * depth);
+        }
+    }
+    return matrix;
+}
+
+void destroy_matrix_3d(Matrix3D *matrix) {
+    if (matrix == NULL) {
+        printf("matrix is null\n");
+        return;
+    }
+    if (matrix->data == NULL) {
+        printf("data is null\n");
+        return;
+    }
+    free(matrix->data);
+    free(matrix);
+    matrix = NULL;
+}
