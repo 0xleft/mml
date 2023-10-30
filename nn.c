@@ -41,7 +41,6 @@ void destroy_network(Network *network) {
 Matrix *forward(Network *network, Matrix *input) {
     Matrix *result = input;
     for (int i = 0; i < network->layer_count; i++) {
-        printf("layer %d\n", i);
         Layer *layer = network->layers[i];
         switch (layer->type) {
             case DENSE:
@@ -54,13 +53,6 @@ Matrix *forward(Network *network, Matrix *input) {
         }
     }
     return result;
-}
-
-void backward(Network *network, Matrix *expected) {
-}
-
-void update(Network *network, float learning_rate) {
-
 }
 
 // 2f
@@ -80,6 +72,45 @@ float calc_loss(Matrix *output, Matrix *expected) {
     destroy_matrix(loss);
     destroy_matrix(squared_loss);
     return result;
+}
+
+void backward(Network *network, Matrix *expected) {
+    int last_layer_index = network->layer_count - 1;
+    Matrix *errors = NULL;
+    for (int i = last_layer_index; i >= 0; i--) {
+        Layer *layer = network->layers[i];
+
+        if (i == last_layer_index) {
+            errors = calc_loss_gradient(layer->layer.dense->output, expected);
+        }
+
+        switch (layer->type) {
+            case DENSE:
+                errors = backward_dense(layer->layer.dense, errors);
+                break;
+            case CONV2D:
+                break;
+            default:
+                break;
+        }
+    }
+
+    destroy_matrix(errors);
+}
+
+void update(Network *network, float learning_rate) {
+    for (int i = 0; i < network->layer_count; i++) {
+        Layer *layer = network->layers[i];
+        switch (layer->type) {
+            case DENSE:
+                update_dense(layer->layer.dense, learning_rate);
+                break;
+            case CONV2D:
+                break;
+            default:
+                break;
+        }
+    }
 }
 
 float train_input(Network *network, Matrix *input, Matrix *expected, float learning_rate) {

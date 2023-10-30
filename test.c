@@ -113,11 +113,13 @@ void test_nn_functions() {
     Matrix *input = create_matrix_from_array(1, 2, (float[]) {1, 2});
     Matrix *expected = create_matrix_from_array(1, 1, (float[]) {0.3f});
 
-    printf("input:\n");
-    print_matrix(input);
-
-    printf("expected:\n");
     Matrix *output = forward(network, input);
+    print_matrix(output);
+
+    for (int i = 0; i < 1000; i++)
+        train_input(network, input, expected, 0.1f);
+
+    output = forward(network, input);
     print_matrix(output);
 
     destroy_matrix(input);

@@ -58,40 +58,59 @@ void destroy_dense_layer(DenseLayer *layer) {
 }
 
 Matrix *forward_dense(DenseLayer *layer, Matrix *input) {
-    print_matrix(layer->weights);
     Matrix *res_dot = dot(input, layer->weights);
     Matrix *res_add = add(res_dot, layer->bias);
     Matrix *result = apply(res_add, layer->activation);
     destroy_matrix(res_dot);
     destroy_matrix(res_add);
+
+    layer->input = copy_matrix(input);
+    layer->output = copy_matrix(result);
+
     return result;
 }
 
-void backward_dense(DenseLayer *layer, Matrix *errors) {
-    Matrix *weights_t = transpose(layer->weights);
-    Matrix *errors_t = transpose(errors);
-    Matrix *input_t = transpose(layer->input);
-    Matrix *delta = dot(errors_t, weights_t);
-    delta = multiply(delta, input_t);
-    destroy_matrix(layer->delta);
+// returns upstream gradient and sets layer->delta
+Matrix *backward_dense(DenseLayer *layer, Matrix *loss_gradient) {
+    Matrix *transfer_derivative = derivative_m(layer->output, layer->activation);
+    Matrix *delta = multiply(loss_gradient, transfer_derivative);
+
+    destroy_matrix(loss_gradient);
+    destroy_matrix(transfer_derivative);
+
     layer->delta = delta;
-    destroy_matrix(weights_t);
-    destroy_matrix(errors_t);
-    destroy_matrix(input_t);
+
+    // upstream gradient
+    Matrix *weights_transpose = transpose(layer->weights);
+    Matrix *upstream_gradient = dot(delta, weights_transpose);
+
+    destroy_matrix(weights_transpose);
+
+    return upstream_gradient;
 }
 
 void update_dense(DenseLayer *layer, float learning_rate) {
-    Matrix *weights_delta = multiply_s(layer->delta, layer->epsilon);
-    Matrix *bias_delta = multiply_s(layer->delta, layer->epsilon);
-    float learning_rate_decay = 1.0f - learning_rate * layer->decay_rate;
-    Matrix *weights_delta_ad = multiply_s(weights_delta, learning_rate_decay);
-    Matrix *bias_delta_ad = multiply_s(bias_delta, learning_rate_decay);
-    layer->weights = subtract(layer->weights, weights_delta_ad);
-    layer->bias = subtract(layer->bias, weights_delta_ad);
-    destroy_matrix(weights_delta);
-    destroy_matrix(bias_delta);
-    destroy_matrix(weights_delta);
-    destroy_matrix(bias_delta);
-    destroy_matrix(weights_delta_ad);
-    destroy_matrix(bias_delta_ad);
+    for (int j = 0; j < layer->output_size; j++) {
+        for (int k = 0; k < layer->input_size; k++) {
+            float delta = layer->delta->data[0][j];
+            float input = layer->input->data[0][k];
+            float weight = layer->weights->data[k][j];
+
+            float learning_rate_adjusted = learning_rate / (1 + layer->decay_rate);
+
+            float new_weight = weight - learning_rate_adjusted * delta * input;
+            layer->weights->data[k][j] = new_weight;
+
+            // update bias
+            float bias = layer->bias->data[0][j];
+            float new_bias = bias - learning_rate_adjusted * delta;
+            layer->bias->data[0][j] = new_bias;
+        }
+    }
+
+    destroy_matrix(layer->delta);
+    layer->delta = NULL;
+
+    // update decay rate
+    layer->decay_rate += layer->epsilon;
 }

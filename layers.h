@@ -67,7 +67,7 @@ typedef struct Layer Layer;
 DenseLayer *create_dense_layer(int input_size, int output_size, Activation activation, float epsilon, float decay_rate);
 void destroy_dense_layer(DenseLayer *layer);
 Matrix *forward_dense(DenseLayer *layer, Matrix *input);
-void backward_dense(DenseLayer *layer, Matrix *errors);
+Matrix *backward_dense(DenseLayer *layer, Matrix *loss_gradient);
 void update_dense(DenseLayer *layer, float learning_rate);
 Layer *create_dense_layer_l(int input_size, int output_size, Activation activation, float epsilon, float decay_rate);
 
