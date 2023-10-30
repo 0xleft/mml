@@ -105,18 +105,19 @@ void test_nn_functions() {
     printf("test_nn_functions\n");
     Network *network;
     network = create_network(1);
-    Layer *layer1 = create_dense_layer_l(2, 1, SIGMOID, 0.1f, 0.1f);
+    Layer *layer1 = create_dense_layer_l(2, 1, RELU, 0.1f, 0.1f);
 
-    srand(0);
     add_layer(network, layer1);
 
     Matrix *input = create_matrix_from_array(1, 2, (float[]) {1, 2});
     Matrix *expected = create_matrix_from_array(1, 1, (float[]) {0.3f});
 
+    print_matrix(network->layers[0]->layer.dense->weights);
+
     Matrix *output = forward(network, input);
     print_matrix(output);
 
-    for (int i = 0; i < 1000; i++)
+    for (int i = 0; i < 10000; i++)
         train_input(network, input, expected, 0.1f);
 
     output = forward(network, input);
