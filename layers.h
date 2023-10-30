@@ -8,7 +8,7 @@
 
 enum LayerType {
     DENSE,
-    CONV,
+    CONV2D,
 };
 
 typedef enum LayerType LayerType;
@@ -28,28 +28,28 @@ struct DenseLayer {
 
 typedef struct DenseLayer DenseLayer;
 
-struct ConvLayer {
+struct Conv2DLayer {
     int stride;
     int padding;
     int kernel_size; // the filter size
     int input_size;
     int output_size;
     int depth;
+    Matrix *weights;
+    Matrix *bias;
     Activation activation;
-    Matrix3D *input;
-    Matrix3D *output;
-    Matrix3D *delta;
+    Matrix *input;
+    Matrix *output;
+    Matrix *delta;
     float epsilon;
     float decay_rate;
-    Matrix3D *weights;
-    Matrix *bias;
 };
 
-typedef struct ConvLayer ConvLayer;
+typedef struct Conv2DLayer Conv2DLayer;
 
 union LayerUnion {
     DenseLayer *dense;
-    ConvLayer *conv;
+    Conv2DLayer *conv;
 };
 
 typedef union LayerUnion LayerUnion;
@@ -69,5 +69,6 @@ void destroy_dense_layer(DenseLayer *layer);
 Matrix *forward_dense(DenseLayer *layer, Matrix *input);
 void backward_dense(DenseLayer *layer, Matrix *errors);
 void update_dense(DenseLayer *layer, float learning_rate);
+Layer *create_dense_layer_l(int input_size, int output_size, Activation activation, float epsilon, float decay_rate);
 
 // conv

@@ -11,7 +11,8 @@ add_executable(mml main.c
         data.c
         data.h
         layers.c
-        layers.h)
+        layers.h
+)
 
 add_executable(test test.c
         nn.c
@@ -21,7 +22,8 @@ add_executable(test test.c
         data.c
         data.h
         layers.c
-        layers.h)
+        layers.h
+)
 
 add_executable(logic_gates logic.c
         nn.c
@@ -31,7 +33,8 @@ add_executable(logic_gates logic.c
         data.c
         data.h
         layers.c
-        layers.h)
+        layers.h
+)
 
 add_executable(conv conv.c
         nn.c
@@ -41,7 +44,8 @@ add_executable(conv conv.c
         data.c
         data.h
         layers.c
-        layers.h)
+        layers.h
+)
 
 # include math
 target_link_libraries(mml m)

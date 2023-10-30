@@ -7,14 +7,6 @@
 #include <stddef.h>
 #include <math.h>
 
-#define EPSILON 0.000000001f
-#define DECAY_RATE 0.00001f
-
-// using the xavier initialization weight = U [-(1/sqrt(n)), 1/sqrt(n)] where n is the number of inputs
-void initialize_weights_xavier(Network *network) {
-    // TODO
-}
-
 Network *create_network(int max_layer_count) {
     Network *network = malloc(sizeof(Network));
     network->layer_count = 0;
@@ -49,13 +41,22 @@ void destroy_network(Network *network) {
 Matrix *forward(Network *network, Matrix *input) {
     Matrix *result = input;
     for (int i = 0; i < network->layer_count; i++) {
-        // TODO
+        printf("layer %d\n", i);
+        Layer *layer = network->layers[i];
+        switch (layer->type) {
+            case DENSE:
+                result = forward_dense(layer->layer.dense, result);
+                break;
+            case CONV2D:
+                break;
+            default:
+                break;
+        }
     }
     return result;
 }
 
 void backward(Network *network, Matrix *expected) {
-
 }
 
 void update(Network *network, float learning_rate) {

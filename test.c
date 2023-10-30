@@ -103,12 +103,33 @@ void test_matrix_functions() {
 
 void test_nn_functions() {
     printf("test_nn_functions\n");
+    Network *network;
+    network = create_network(1);
+    Layer *layer1 = create_dense_layer_l(2, 1, SIGMOID, 0.1f, 0.1f);
+
+    srand(0);
+    add_layer(network, layer1);
+
+    Matrix *input = create_matrix_from_array(1, 2, (float[]) {1, 2});
+    Matrix *expected = create_matrix_from_array(1, 1, (float[]) {0.3f});
+
+    printf("input:\n");
+    print_matrix(input);
+
+    printf("expected:\n");
+    Matrix *output = forward(network, input);
+    print_matrix(output);
+
+    destroy_matrix(input);
+    destroy_matrix(expected);
+    destroy_matrix(output);
+    destroy_network(network);
 }
 
 int main() {
     test_matrix_functions();
-    test_nn_functions();
     test_dataset_functions();
+    test_nn_functions();
 
     return 0;
 }

@@ -17,6 +17,8 @@ struct Network {
 typedef struct Network Network;
 
 Network *create_network(int max_layer_count);
+void add_layer(Network *network, Layer *layer);
+Matrix *forward(Network *network, Matrix *input);
 void destroy_network(Network *network);
 // maybe return final loss?
 void train_dataset(Network *network, Dataset *dataset, int epochs, float learning_rate);

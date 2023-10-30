@@ -14,6 +14,9 @@ Matrix *create_matrix(int rows, int cols) {
     matrix->data = malloc(sizeof(float *) * rows);
     for (int i = 0; i < rows; i++) {
         matrix->data[i] = malloc(sizeof(float) * cols);
+        for (int j = 0; j < cols; j++) {
+            matrix->data[i][j] = 0;
+        }
     }
     return matrix;
 }
@@ -187,6 +190,7 @@ void destroy_matrix(Matrix *matrix) {
         return;
     }
     free(matrix->data);
+    matrix->data = NULL;
     free(matrix);
     matrix = NULL;
 }
@@ -205,32 +209,4 @@ void print_matrix(Matrix *matrix) {
         printf("\n");
     }
     printf("\n");
-}
-
-/// MATRIX 3d
-
-Matrix3D *create_matrix_3d(int rows, int cols, int depth) {
-    Matrix3D *matrix = malloc(sizeof(Matrix3D));
-    matrix->rows = rows;
-    matrix->cols = cols;
-    matrix->depth = depth;
-    matrix->data = malloc(sizeof(Matrix *) * depth);
-    for (int i = 0; i < depth; i++) {
-        matrix->data[i] = create_matrix(rows, cols);
-    }
-    return matrix;
-}
-
-void destroy_matrix_3d(Matrix3D *matrix) {
-    if (matrix == NULL) {
-        printf("matrix is null\n");
-        return;
-    }
-    if (matrix->data == NULL) {
-        printf("data is null\n");
-        return;
-    }
-    free(matrix->data);
-    free(matrix);
-    matrix = NULL;
 }
