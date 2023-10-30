@@ -107,6 +107,7 @@ void test_nn_functions() {
     network = create_network(1);
     Layer *layer1 = create_dense_layer_l(2, 1, RELU, 0.1f, 0.1f);
 
+    srand(0);
     add_layer(network, layer1);
 
     Matrix *input = create_matrix_from_array(1, 2, (float[]) {1, 2});
@@ -122,6 +123,10 @@ void test_nn_functions() {
 
     output = forward(network, input);
     print_matrix(output);
+
+    if (output->data[0][0] < 0.3f) {
+        printf(RED"train_input failed\n"RESET);
+    }
 
     destroy_matrix(input);
     destroy_matrix(expected);
