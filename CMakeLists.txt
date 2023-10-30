@@ -33,7 +33,18 @@ add_executable(logic_gates logic.c
         layers.c
         layers.h)
 
+add_executable(conv conv.c
+        nn.c
+        nn.h
+        matrix.c
+        matrix.h
+        data.c
+        data.h
+        layers.c
+        layers.h)
+
 # include math
 target_link_libraries(mml m)
 target_link_libraries(test m)
 target_link_libraries(logic_gates m)
+target_link_libraries(conv m)

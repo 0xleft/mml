@@ -214,12 +214,9 @@ Matrix3D *create_matrix_3d(int rows, int cols, int depth) {
     matrix->rows = rows;
     matrix->cols = cols;
     matrix->depth = depth;
-    matrix->data = malloc(sizeof(float **) * rows);
-    for (int i = 0; i < rows; i++) {
-        matrix->data[i] = malloc(sizeof(float *) * cols);
-        for (int j = 0; j < cols; j++) {
-            matrix->data[i][j] = malloc(sizeof(float) * depth);
-        }
+    matrix->data = malloc(sizeof(Matrix *) * depth);
+    for (int i = 0; i < depth; i++) {
+        matrix->data[i] = create_matrix(rows, cols);
     }
     return matrix;
 }

@@ -12,103 +12,25 @@
 
 // using the xavier initialization weight = U [-(1/sqrt(n)), 1/sqrt(n)] where n is the number of inputs
 void initialize_weights_xavier(Network *network) {
-    for (int i = 0; i < network->layer_count; i++) {
-        int input_size = network->layers[i]->input_size;
-        DenseLayer *layer = network->layers[i];
-
-        float lower_bound = -(1 / sqrt(input_size));
-        float upper_bound = 1 / sqrt(input_size);
-        for (int j = 0; j < layer->weights->rows; j++) {
-            for (int k = 0; k < layer->weights->cols; k++) {
-                layer->weights->data[j][k] = (float) rand() / (float) (RAND_MAX / (upper_bound - lower_bound)) + lower_bound;
-            }
-        }
-    }
+    // TODO
 }
 
-void print_neural_network(Network *network) {
-    printf("Neural Network\n");
-    for (int i = 0; i < network->layer_count; i++) {
-        DenseLayer *layer = network->layers[i];
-        printf("DenseLayer %d\n", i);
-        printf("input size: %d\n", layer->input_size);
-        printf("output size: %d\n", layer->output_size);
-        printf("activation: %d\n", layer->activation);
-        printf("weights:\n");
-        print_matrix(layer->weights);
-        printf("bias:\n");
-        print_matrix(layer->bias);
-    }
-}
-
-// weight = U [-(sqrt(6)/sqrt(n + m)), sqrt(6)/sqrt(n + m)] where n is the number of inputs and m is the number of outputs
-void initialize_weights_xavier_norm(Network *network) {
-    for (int i = 0; i < network->layer_count; i++) {
-        int input_size = network->layers[i]->input_size;
-        int output_size = network->layers[i]->output_size;
-        DenseLayer *layer = network->layers[i];
-
-        float lower_bound = -(sqrt(6) / sqrt(input_size + output_size));
-        float upper_bound = sqrt(6) / sqrt(input_size + output_size);
-        for (int j = 0; j < layer->weights->rows; j++) {
-            for (int k = 0; k < layer->weights->cols; k++) {
-                layer->weights->data[j][k] = (float) rand() / (float) (RAND_MAX / (upper_bound - lower_bound)) + lower_bound;
-            }
-        }
-    }
-}
-
-void randomize_network(Network *network) {
-    for (int i = 0; i < network->layer_count; i++) {
-        DenseLayer *layer = network->layers[i];
-        for (int j = 0; j < layer->weights->rows; j++) {
-            for (int k = 0; k < layer->weights->cols; k++) {
-                layer->weights->data[j][k] = (float) rand() / (float) (RAND_MAX / 2) - 1;
-            }
-        }
-        for (int j = 0; j < layer->bias->rows; j++) {
-            for (int k = 0; k < layer->bias->cols; k++) {
-                layer->bias->data[j][k] = (float) rand() / (float) (RAND_MAX / 2) - 1;
-            }
-        }
-    }
-}
-
-Network *create_network(int layer_count, int *layer_sizes, Activation *activations) {
+Network *create_network(int max_layer_count) {
     Network *network = malloc(sizeof(Network));
-    network->layer_count = layer_count;
-    network->layers = malloc(sizeof(DenseLayer *) * layer_count);
-    for (int i = 0; i < layer_count; i++) {
-        network->layers[i] = create_layer(layer_sizes[i], layer_sizes[i + 1], activations[i], EPSILON, DECAY_RATE);
-    }
+    network->layer_count = 0;
+    network->max_layer_count = max_layer_count;
+    network->layers = malloc(sizeof(Layer) * max_layer_count);
     return network;
 }
 
-void destroy_layer(DenseLayer *layer) {
-    if (layer == NULL) {
-        printf("layer is null\n");
+void add_layer(Network *network, Layer *layer) {
+    if (network->layer_count == network->max_layer_count) {
+        printf("layer count is equal to max layer count\n");
         return;
     }
-    if (layer->weights == NULL) {
-        printf("weights is null\n");
-        return;
-    }
-    if (layer->bias == NULL) {
-        printf("bias is null\n");
-        return;
-    }
-    destroy_matrix(layer->weights);
-    destroy_matrix(layer->bias);
-    // maybe free input, output and delta?
-    if (layer->input != NULL)
-        destroy_matrix(layer->input);
-    if (layer->output != NULL)
-        destroy_matrix(layer->output);
-    if (layer->delta != NULL)
-        destroy_matrix(layer->delta);
-    free(layer);
-    // nyll
-    layer = NULL;
+
+    network->layers[network->layer_count] = layer;
+    network->layer_count++;
 }
 
 void destroy_network(Network *network) {
@@ -117,7 +39,7 @@ void destroy_network(Network *network) {
         return;
     }
     for (int i = 0; i < network->layer_count; i++) {
-        destroy_layer(network->layers[i]);
+        // TODO
     }
     free(network->layers);
     free(network);
@@ -127,16 +49,17 @@ void destroy_network(Network *network) {
 Matrix *forward(Network *network, Matrix *input) {
     Matrix *result = input;
     for (int i = 0; i < network->layer_count; i++) {
-        DenseLayer *layer = network->layers[i];
-        result = dot(result, layer->weights);
-        result = add(result, layer->bias);
-        result = apply(result, layer->activation);
-
-        // duplicate matrix
-        layer->input = copy_matrix(input);
-        layer->output = copy_matrix(result);
+        // TODO
     }
     return result;
+}
+
+void backward(Network *network, Matrix *expected) {
+
+}
+
+void update(Network *network, float learning_rate) {
+
 }
 
 // 2f
@@ -147,74 +70,6 @@ Matrix *calc_loss_gradient(Matrix *output, Matrix *expected) {
     destroy_matrix(loss_gradient);
 
     return result;
-}
-
-Matrix *backward(Network *network, Matrix *expected) {
-    // yep https://machinelearningmastery.com/implement-backpropagation-algorithm-scratch-python/
-    int last_layer_index = network->layer_count - 1;
-    for (int i = last_layer_index; i >= 0; i--) {
-        DenseLayer *layer = network->layers[i];
-
-        Matrix *errors = NULL;
-
-        if (i != last_layer_index) {
-            errors = create_matrix(1, layer->output_size);
-            for (int j = 0; j < layer->output_size; j++) {
-                float error = 0.0f;
-                for (int k = 0; k < network->layers[i + 1]->output_size; k++) {
-                    float weight = network->layers[i + 1]->weights->data[j][k];
-                    float delta = network->layers[i + 1]->delta->data[0][k];
-                    error += weight * delta;
-                }
-                errors->data[0][j] = error;
-            }
-        } else {
-            errors = calc_loss_gradient(layer->output, expected);
-        }
-
-        Matrix *transfer_derivative = derivative_m(layer->output, layer->activation);
-        Matrix *delta = multiply(errors, transfer_derivative);
-
-        destroy_matrix(errors);
-        destroy_matrix(transfer_derivative);
-
-        layer->delta = delta;
-    }
-}
-
-void update_weights(Network *network, float learning_rate) {
-    for (int i = 0; i < network->layer_count; i++) {
-        DenseLayer *layer = network->layers[i];
-
-        if (layer->delta == NULL) {
-            printf("delta is null will not update weights\n");
-            continue;
-        }
-
-        for (int j = 0; j < layer->output_size; j++) {
-            for (int k = 0; k < layer->input_size; k++) {
-                float delta = layer->delta->data[0][j];
-                float input = layer->input->data[0][k];
-                float weight = layer->weights->data[k][j];
-
-                float learning_rate_adjusted = learning_rate / (1 + layer->decay_rate);
-
-                float new_weight = weight - learning_rate_adjusted * delta * input;
-                layer->weights->data[k][j] = new_weight;
-
-                // update bias
-                float bias = layer->bias->data[0][j];
-                float new_bias = bias - learning_rate_adjusted * delta;
-                layer->bias->data[0][j] = new_bias;
-            }
-        }
-
-        destroy_matrix(layer->delta);
-        layer->delta = NULL;
-
-        // update decay rate
-        layer->decay_rate += layer->epsilon;
-    }
 }
 
 float calc_loss(Matrix *output, Matrix *expected) {
@@ -229,7 +84,7 @@ float calc_loss(Matrix *output, Matrix *expected) {
 float train_input(Network *network, Matrix *input, Matrix *expected, float learning_rate) {
     Matrix *output = forward(network, input);
     backward(network, expected);
-    update_weights(network, learning_rate);
+    update(network, learning_rate);
     float loss = calc_loss(output, expected);
 
     destroy_matrix(output);

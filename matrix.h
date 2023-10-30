@@ -28,7 +28,7 @@ struct Matrix3D {
     int rows;
     int cols;
     int depth;
-    float ***data;
+    Matrix **data;
 };
 
 typedef struct Matrix3D Matrix3D;

@@ -43,12 +43,24 @@ Matrix *forward_dense(DenseLayer *layer, Matrix *input) {
     return result;
 }
 
-// TODO
-void backward_dense(DenseLayer *layer, Matrix errors) {
-    return;
+void backward_dense(DenseLayer *layer, Matrix *errors) {
+    Matrix *weights_t = transpose(layer->weights);
+    Matrix *errors_t = transpose(errors);
+    Matrix *input_t = transpose(layer->input);
+    Matrix *delta = dot(errors_t, weights_t);
+    delta = multiply(delta, input_t);
+    destroy_matrix(layer->delta);
+    layer->delta = delta;
+    destroy_matrix(weights_t);
+    destroy_matrix(errors_t);
+    destroy_matrix(input_t);
 }
 
-// TODO
 void update_dense(DenseLayer *layer, float learning_rate) {
-    return;
+    Matrix *weights_delta = multiply_s(layer->delta, layer->epsilon);
+    Matrix *bias_delta = multiply_s(layer->delta, layer->epsilon);
+    layer->weights = subtract(layer->weights, weights_delta);
+    layer->bias = subtract(layer->bias, bias_delta);
+    destroy_matrix(weights_delta);
+    destroy_matrix(bias_delta);
 }
