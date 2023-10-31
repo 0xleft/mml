@@ -16,6 +16,8 @@ add_executable(mml main.c
         layers/dense.h
         layers/conv2d.c
         layers/conv2d.h
+        layers/common.c
+        layers/common.h
 )
 
 add_executable(test test.c
@@ -31,6 +33,8 @@ add_executable(test test.c
         layers/dense.h
         layers/conv2d.c
         layers/conv2d.h
+        layers/common.c
+        layers/common.h
 )
 
 add_executable(logic_gates logic.c
@@ -46,6 +50,8 @@ add_executable(logic_gates logic.c
         layers/dense.h
         layers/conv2d.c
         layers/conv2d.h
+        layers/common.c
+        layers/common.h
 )
 
 add_executable(conv conv.c
@@ -61,6 +67,8 @@ add_executable(conv conv.c
         layers/dense.h
         layers/conv2d.c
         layers/conv2d.h
+        layers/common.c
+        layers/common.h
 )
 
 # include math

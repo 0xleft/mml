@@ -21,6 +21,8 @@ Conv2DLayer *create_conv2d_layer(int stride, int padding, int kernel_size, int i
     layer->input = NULL;
     layer->output = NULL;
     layer->delta = NULL;
+    initialize_weights_xavier_norm(kernel_size * kernel_size, layer->output_size, layer->weights);
+    initialize_weights_xavier_norm(1, layer->output_size, layer->bias);
     return layer;
 }
 

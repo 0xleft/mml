@@ -5,6 +5,7 @@
 //
 
 #include "../matrix.h"
+#include "common.h"
 
 struct DenseLayer {
     int input_size;

@@ -7,17 +7,16 @@
 int main() {
     Network *network;
     network = create_network(1);
-    Layer *conv_layer = create_conv2d_layer_l(1, 2, 5, 32, RELU, 0.0f, 0.0f);
-
-    printf("outut size: %d\n", conv_layer->layer.conv2d->output_size);
+    Layer *conv_layer = create_conv2d_layer_l(1, 0, 3, 7, RELU, 0.0f, 0.0f);
 
     add_layer(network, conv_layer);
 
-    Matrix *input = from_image("tests/cross.png");
+    Matrix *input = from_image("tests/small.png");
     printf("input size: %d\n", input->rows);
 
     Matrix *output = forward(network, input);
     printf("output size: %d\n", output->rows);
+    print_matrix(output);
 
     destroy_matrix(input);
     destroy_matrix(output);

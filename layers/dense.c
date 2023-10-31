@@ -17,6 +17,8 @@ DenseLayer *create_dense_layer(int input_size, int output_size, Activation activ
     layer->delta = NULL;
     layer->epsilon = epsilon;
     layer->decay_rate = decay_rate;
+    initialize_weights_xavier_norm(input_size, output_size, layer->weights);
+    initialize_weights_xavier_norm(1, output_size, layer->bias);
     return layer;
 }
 
