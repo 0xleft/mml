@@ -100,6 +100,12 @@ void test_matrix_functions() {
         printf(RED"pad failed\n"RESET);
     }
 
+    // test loading images
+    Matrix *image = from_image("tests/cross.png");
+    if (image->rows != 32 || image->cols != 32) {
+        printf(RED"from_image failed\n"RESET);
+    }
+
     destroy_matrix(a);
     destroy_matrix(b);
     destroy_matrix(c);

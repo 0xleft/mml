@@ -68,3 +68,11 @@ target_link_libraries(mml m)
 target_link_libraries(test m)
 target_link_libraries(logic_gates m)
 target_link_libraries(conv m)
+
+# include libpng
+find_package(PNG REQUIRED)
+target_link_libraries(mml ${PNG_LIBRARY})
+target_link_libraries(test ${PNG_LIBRARY})
+target_link_libraries(logic_gates ${PNG_LIBRARY})
+target_link_libraries(conv ${PNG_LIBRARY})
+

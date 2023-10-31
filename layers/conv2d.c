@@ -14,7 +14,13 @@ Conv2DLayer *create_conv2d_layer(int stride, int padding, int kernel_size, int i
     layer->activation = activation;
     layer->epsilon = epsilon;
     layer->decay_rate = decay_rate;
-    // TODO calc ouput size using the formula from standford and create weights and bias from that
+    // input size means nxn input n for input_size
+    layer->output_size = (input_size - kernel_size + 2 * padding) / stride + 1;
+    layer->weights = create_matrix(kernel_size * kernel_size, layer->output_size);
+    layer->bias = create_matrix(1, layer->output_size);
+    layer->input = NULL;
+    layer->output = NULL;
+    layer->delta = NULL;
     return layer;
 }
 
@@ -34,8 +40,35 @@ void destroy_conv2d_layer(Conv2DLayer *layer) {
     layer = NULL;
 }
 
+// basically we are computing the dot product of the kernel passing over the input
+// stanford talk:
+// https://www.youtube.com/watch?v=bNb2fEVKeEo&
 Matrix *forward_conv2d(Conv2DLayer *layer, Matrix *input) {
     Matrix *padded_input = pad(input, layer->padding);
+    Matrix *result = create_matrix(layer->output_size, layer->output_size);
+    for (int i = 0; i < layer->output_size; i++) {
+        for (int j = 0; j < layer->output_size; j++) {
+            Matrix *input_slice = get_slice(padded_input, i * layer->stride, j * layer->stride, layer->kernel_size,
+                                            layer->kernel_size);
+            Matrix *weights_slice = get_slice(layer->weights, 0, 0, layer->kernel_size, layer->kernel_size);
+            Matrix *res_dot = dot(input_slice, weights_slice);
+            Matrix *res_add = add(res_dot, layer->bias);
+            Matrix *res_act = apply(res_add, layer->activation);
+            result->data[i * layer->output_size + j] = res_act->data[0];
+            destroy_matrix(input_slice);
+            destroy_matrix(weights_slice);
+            destroy_matrix(res_dot);
+            destroy_matrix(res_add);
+            destroy_matrix(res_act);
+        }
+    }
+
+    destroy_matrix(padded_input);
+
+    layer->input = copy_matrix(input);
+    layer->output = copy_matrix(result);
+
+    return result;
 }
 
 Matrix *backward_conv2d(Conv2DLayer *layer, Matrix *loss_gradient) {

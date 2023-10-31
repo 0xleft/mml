@@ -19,22 +19,15 @@ Simple machine learning project written in pure c.
 - [ ] Remove hard coded RMSProp
 - [ ] Implement different layer types
 
+## Dependencies
+
+```bash
+sudo apt install zlib1g-dev
+sudo apt install libpng-dev
+```
+
 ## Usage
 
 ```bash
 ./run.sh
 ```
-
-## Logic gates
-
-```bash
-./run.sh logic
-```
-
-## Testing
-
-```bash
-./run.sh test
-```
-
-## References
