@@ -70,7 +70,6 @@ Matrix *forward_dense(DenseLayer *layer, Matrix *input) {
     return result;
 }
 
-// returns upstream gradient and sets layer->delta
 Matrix *backward_dense(DenseLayer *layer, Matrix *loss_gradient) {
     Matrix *transfer_derivative = derivative_m(layer->output, layer->activation);
     Matrix *delta = multiply(loss_gradient, transfer_derivative);
@@ -80,13 +79,10 @@ Matrix *backward_dense(DenseLayer *layer, Matrix *loss_gradient) {
 
     layer->delta = delta;
 
-    // upstream gradient
-    Matrix *weights_transpose = transpose(layer->weights);
-    Matrix *upstream_gradient = dot(delta, weights_transpose);
+    // downstream gradient
+    Matrix *downstream_gradient = dot(delta, transpose(layer->weights));
 
-    destroy_matrix(weights_transpose);
-
-    return upstream_gradient;
+    return downstream_gradient;
 }
 
 void update_dense(DenseLayer *layer, float learning_rate) {

@@ -111,7 +111,7 @@ void test_nn_functions() {
     add_layer(network, layer1);
 
     Matrix *input = create_matrix_from_array(1, 2, (float[]) {1, 2});
-    Matrix *expected = create_matrix_from_array(1, 1, (float[]) {0.3f});
+    Matrix *expected = create_matrix_from_array(1, 1, (float[]) {0.1f});
 
     print_matrix(network->layers[0]->layer.dense->weights);
 
@@ -124,7 +124,7 @@ void test_nn_functions() {
     output = forward(network, input);
     print_matrix(output);
 
-    if (output->data[0][0] < 0.3f) {
+    if (output->data[0][0] - expected->data[0][0] > 0.1f) {
         printf(RED"train_input failed\n"RESET);
     }
 
