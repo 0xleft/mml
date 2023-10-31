@@ -6,7 +6,7 @@
 
 #include "matrix.h"
 #include "layers/dense.h"
-// #include "layers/conv2d.h"
+#include "layers/conv2d.h"
 
 enum LayerType {
     DENSE,
@@ -17,7 +17,7 @@ typedef enum LayerType LayerType;
 
 union LayerUnion {
     DenseLayer *dense;
-    // Conv2DLayer *conv;
+    Conv2DLayer *conv2d;
 };
 
 typedef union LayerUnion LayerUnion;
@@ -36,4 +36,4 @@ Layer *create_dense_layer_l(int input_size, int output_size, Activation activati
 
 // conv
 
-// Layer *create_conv2d_layer_l(int stride, int padding, int kernel_size, int input_size, int output_size, Activation activation, float epsilon, float decay_rate);
+Layer *create_conv2d_layer_l(int stride, int padding, int kernel_size, int input_size, int output_size, Activation activation, float epsilon, float decay_rate);

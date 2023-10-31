@@ -31,7 +31,15 @@ void destroy_network(Network *network) {
         return;
     }
     for (int i = 0; i < network->layer_count; i++) {
-        // TODO
+        Layer *layer = network->layers[i];
+        switch (layer->type) {
+            case DENSE:
+                destroy_dense_layer(layer->layer.dense);
+                break;
+            case CONV2D:
+                destroy_conv2d_layer(layer->layer.conv2d);
+                break;
+        }
     }
     free(network->layers);
     free(network);
@@ -47,6 +55,7 @@ Matrix *forward(Network *network, Matrix *input) {
                 result = forward_dense(layer->layer.dense, result);
                 break;
             case CONV2D:
+                result = forward_conv2d(layer->layer.conv2d, result);
                 break;
             default:
                 break;
@@ -89,6 +98,7 @@ void backward(Network *network, Matrix *expected) {
                 errors = backward_dense(layer->layer.dense, errors);
                 break;
             case CONV2D:
+                errors = backward_conv2d(layer->layer.conv2d, errors);
                 break;
             default:
                 break;
@@ -106,6 +116,7 @@ void update(Network *network, float learning_rate) {
                 update_dense(layer->layer.dense, learning_rate);
                 break;
             case CONV2D:
+                update_conv2d(layer->layer.conv2d, learning_rate);
                 break;
             default:
                 break;
