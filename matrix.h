@@ -47,3 +47,4 @@ Matrix *get_slice(Matrix *matrix, int start_row, int start_col, int rows, int co
 Matrix *from_image(char *filename);
 Matrix *flatten(Matrix *matrix);
 float activate(float x, Activation activation);
+Matrix *flip(Matrix *matrix);

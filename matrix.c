@@ -339,3 +339,13 @@ Matrix *flatten(Matrix *matrix) {
     }
     return result;
 }
+
+Matrix *flip(Matrix *matrix) {
+    Matrix *result = create_matrix(matrix->rows, matrix->cols);
+    for (int i = 0; i < matrix->rows; i++) {
+        for (int j = matrix->cols - 1; j >= 0; j--) {
+            result->data[i][matrix->cols - 1 - j] = matrix->data[i][j];
+        }
+    }
+    return result;
+}
