@@ -88,9 +88,18 @@ void backward(Network *network, Matrix *expected) {
     Matrix *errors = NULL;
     for (int i = last_layer_index; i >= 0; i--) {
         Layer *layer = network->layers[i];
+        Matrix *output = NULL;
+        switch (layer->type) {
+            case DENSE:
+                output = layer->layer.dense->output;
+                break;
+            case CONV2D:
+                output = layer->layer.conv2d->output;
+                break;
+        }
 
         if (i == last_layer_index) {
-            errors = calc_loss_gradient(layer->layer.dense->output, expected);
+            errors = calc_loss_gradient(output, expected);
         }
 
         switch (layer->type) {
@@ -105,7 +114,8 @@ void backward(Network *network, Matrix *expected) {
         }
     }
 
-    destroy_matrix(errors);
+    // TODO investigate why double free :(
+    //destroy_matrix(errors);
 }
 
 void update(Network *network, float learning_rate) {
