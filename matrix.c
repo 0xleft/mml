@@ -329,3 +329,13 @@ Matrix *from_image(char *filename) {
 
     return result;
 }
+
+Matrix *flatten(Matrix *matrix) {
+    Matrix *result = create_matrix(1, matrix->rows * matrix->cols);
+    for (int i = 0; i < matrix->rows; i++) {
+        for (int j = 0; j < matrix->cols; ++j) {
+            result->data[0][i * matrix->cols + j] = matrix->data[i][j];
+        }
+    }
+    return result;
+}

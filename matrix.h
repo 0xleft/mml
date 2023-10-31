@@ -45,3 +45,5 @@ Matrix *create_matrix_from_array(int rows, int cols, float *data);
 Matrix *pad(Matrix *matrix, int pad_size);
 Matrix *get_slice(Matrix *matrix, int start_row, int start_col, int rows, int cols);
 Matrix *from_image(char *filename);
+Matrix *flatten(Matrix *matrix);
+float activate(float x, Activation activation);

@@ -46,20 +46,25 @@ void destroy_conv2d_layer(Conv2DLayer *layer) {
 Matrix *forward_conv2d(Conv2DLayer *layer, Matrix *input) {
     Matrix *padded_input = pad(input, layer->padding);
     Matrix *result = create_matrix(layer->output_size, layer->output_size);
+
     for (int i = 0; i < layer->output_size; i++) {
         for (int j = 0; j < layer->output_size; j++) {
-            Matrix *input_slice = get_slice(padded_input, i * layer->stride, j * layer->stride, layer->kernel_size,
-                                            layer->kernel_size);
-            Matrix *weights_slice = get_slice(layer->weights, 0, 0, layer->kernel_size, layer->kernel_size);
-            Matrix *res_dot = dot(input_slice, weights_slice);
-            Matrix *res_add = add(res_dot, layer->bias);
-            Matrix *res_act = apply(res_add, layer->activation);
-            result->data[i * layer->output_size + j] = res_act->data[0];
+            Matrix *input_slice = get_slice(padded_input, i * layer->stride, j * layer->stride, layer->kernel_size, layer->kernel_size);
+
+            // dot product
+            float sum = 0;
+            for (int k = 0; k < layer->kernel_size; k++) {
+                for (int l = 0; l < layer->kernel_size; l++) {
+                    sum += input_slice->data[k][l] * layer->weights->data[k][l];
+                }
+            }
+
+            result->data[i][j] = sum + layer->bias->data[0][0];
+
             destroy_matrix(input_slice);
-            destroy_matrix(weights_slice);
-            destroy_matrix(res_dot);
-            destroy_matrix(res_add);
-            destroy_matrix(res_act);
+
+            // activation
+            result->data[i][j] = activate(result->data[i][j], layer->activation);
         }
     }
 

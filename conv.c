@@ -16,11 +16,11 @@ int main() {
     Matrix *input = from_image("tests/cross.png");
     printf("input size: %d\n", input->rows);
 
-
     Matrix *output = forward(network, input);
-    print_matrix(output);
+    printf("output size: %d\n", output->rows);
 
+    destroy_matrix(input);
+    destroy_matrix(output);
     destroy_network(network);
-
     return 0;
 }

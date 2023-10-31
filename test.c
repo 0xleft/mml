@@ -106,6 +106,12 @@ void test_matrix_functions() {
         printf(RED"from_image failed\n"RESET);
     }
 
+    // test get_slice
+    Matrix *slice = get_slice(image, 1, 1, 2, 2);
+    if (slice->rows != 2 || slice->cols != 2) {
+        printf(RED"get_slice failed\n"RESET);
+    }
+
     destroy_matrix(a);
     destroy_matrix(b);
     destroy_matrix(c);
@@ -118,6 +124,8 @@ void test_matrix_functions() {
     destroy_matrix(k);
     destroy_matrix(l);
     destroy_matrix(m);
+    destroy_matrix(image);
+    destroy_matrix(slice);
 }
 
 void test_nn_functions() {
