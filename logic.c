@@ -28,8 +28,6 @@ void and() {
     add_data(dataset, input3, expected3);
     add_data(dataset, input4, expected4);
 
-    print_dataset(dataset);
-
     train_dataset(network, dataset, 3000, 0.1f);
 
     Matrix *output1 = forward(network, input1);
@@ -73,8 +71,6 @@ void or() {
     add_data(dataset, input3, expected3);
     add_data(dataset, input4, expected4);
 
-    print_dataset(dataset);
-
     train_dataset(network, dataset, 10000, 1.0f);
 
     Matrix *output1 = forward(network, input1);
@@ -116,8 +112,6 @@ void xor() {
     add_data(dataset, input2, expected2);
     add_data(dataset, input3, expected3);
     add_data(dataset, input4, expected4);
-
-    print_dataset(dataset);
 
     train_dataset(network, dataset, 10000, 0.1f);
 
