@@ -48,7 +48,7 @@ add_executable(logic_gates logic.c
         layers/conv2d.h
 )
 
-add_executable(convn conv.c
+add_executable(conv conv.c
         nn.c
         nn.h
         matrix.c
@@ -67,4 +67,4 @@ add_executable(convn conv.c
 target_link_libraries(mml m)
 target_link_libraries(test m)
 target_link_libraries(logic_gates m)
-target_link_libraries(convn m)
+target_link_libraries(conv m)
