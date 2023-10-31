@@ -1,13 +1,13 @@
 set -e
 
-echo "Running..."
-
-cmake .
+echo "Running... build at `date`"
 
 if [ "$1" = "" ]; then
   echo "No target selected"
   exit 0
 fi
+
+cmake .
 
 cmake --build . --target $1 -- -j 4
 ./$1
