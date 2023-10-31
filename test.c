@@ -112,6 +112,12 @@ void test_matrix_functions() {
         printf(RED"get_slice failed\n"RESET);
     }
 
+    // test flatten
+    Matrix *flat = flatten(slice);
+    if (flat->rows != 1 || flat->cols != 4) {
+        printf(RED"flatten failed\n"RESET);
+    }
+
     destroy_matrix(a);
     destroy_matrix(b);
     destroy_matrix(c);
@@ -126,6 +132,7 @@ void test_matrix_functions() {
     destroy_matrix(m);
     destroy_matrix(image);
     destroy_matrix(slice);
+    destroy_matrix(flat);
 }
 
 void test_nn_functions() {
