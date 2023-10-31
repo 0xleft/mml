@@ -89,6 +89,17 @@ void test_matrix_functions() {
         printf(RED"create_matrix_from_array failed\n"RESET);
     }
 
+    Matrix *l = create_matrix_from_array(2, 2, (float[]) {1, 2, 3, 4});
+    Matrix *m = pad(l, 1);
+    print_matrix(m);
+
+    if (m->data[0][0] != 0 || m->data[0][1] != 0 || m->data[0][2] != 0 || m->data[0][3] != 0 ||
+        m->data[1][0] != 0 || m->data[1][1] != 1 || m->data[1][2] != 2 || m->data[1][3] != 0 ||
+        m->data[2][0] != 0 || m->data[2][1] != 3 || m->data[2][2] != 4 || m->data[2][3] != 0 ||
+        m->data[3][0] != 0 || m->data[3][1] != 0 || m->data[3][2] != 0 || m->data[3][3] != 0) {
+        printf(RED"pad failed\n"RESET);
+    }
+
     destroy_matrix(a);
     destroy_matrix(b);
     destroy_matrix(c);
@@ -99,6 +110,8 @@ void test_matrix_functions() {
     destroy_matrix(i);
     destroy_matrix(j);
     destroy_matrix(k);
+    destroy_matrix(l);
+    destroy_matrix(m);
 }
 
 void test_nn_functions() {

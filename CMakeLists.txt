@@ -12,6 +12,10 @@ add_executable(mml main.c
         data.h
         layers.c
         layers.h
+        layers/dense.c
+        layers/dense.h
+        layers/conv2d.c
+        layers/conv2d.h
 )
 
 add_executable(test test.c
@@ -23,6 +27,10 @@ add_executable(test test.c
         data.h
         layers.c
         layers.h
+        layers/dense.c
+        layers/dense.h
+        layers/conv2d.c
+        layers/conv2d.h
 )
 
 add_executable(logic_gates logic.c
@@ -34,9 +42,13 @@ add_executable(logic_gates logic.c
         data.h
         layers.c
         layers.h
+        layers/dense.c
+        layers/dense.h
+        layers/conv2d.c
+        layers/conv2d.h
 )
 
-add_executable(conv conv.c
+add_executable(convn conv.c
         nn.c
         nn.h
         matrix.c
@@ -45,10 +57,14 @@ add_executable(conv conv.c
         data.h
         layers.c
         layers.h
+        layers/dense.c
+        layers/dense.h
+        layers/conv2d.c
+        layers/conv2d.h
 )
 
 # include math
 target_link_libraries(mml m)
 target_link_libraries(test m)
 target_link_libraries(logic_gates m)
-target_link_libraries(conv m)
+target_link_libraries(convn m)

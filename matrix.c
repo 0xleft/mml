@@ -210,3 +210,18 @@ void print_matrix(Matrix *matrix) {
     }
     printf("\n");
 }
+
+// pad border with 0s
+Matrix *pad(Matrix *matrix, int padding) {
+    Matrix *result = create_matrix(matrix->rows + padding * 2, matrix->cols + padding * 2);
+    for (int i = 0; i < result->rows; i++) {
+        for (int j = 0; j < result->cols; j++) {
+            if (i < padding || i >= result->rows - padding || j < padding || j >= result->cols - padding) {
+                result->data[i][j] = 0;
+            } else {
+                result->data[i][j] = matrix->data[i - padding][j - padding];
+            }
+        }
+    }
+    return result;
+}

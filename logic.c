@@ -3,6 +3,8 @@
 //
 
 #include "nn.h"
+#include <stdio.h>
+#include <stdlib.h>
 
 #define RED "\033[0;31m"
 #define RESET "\033[0m"
