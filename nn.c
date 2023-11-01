@@ -57,8 +57,6 @@ Matrix *forward(Network *network, Matrix *input) {
             case CONV2D:
                 result = forward_conv2d(layer->layer.conv2d, result);
                 break;
-            default:
-                break;
         }
     }
     return result;
@@ -136,6 +134,7 @@ void update(Network *network, float learning_rate) {
 
 float train_input(Network *network, Matrix *input, Matrix *expected, float learning_rate) {
     Matrix *output = forward(network, input);
+
     backward(network, expected);
     update(network, learning_rate);
     float loss = calc_loss(output, expected);

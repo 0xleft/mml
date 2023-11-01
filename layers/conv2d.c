@@ -16,12 +16,12 @@ Conv2DLayer *create_conv2d_layer(int stride, int padding, int kernel_size, int i
     layer->decay_rate = decay_rate;
     // input size means nxn input n for input_size
     layer->output_size = (input_size - kernel_size + 2 * padding) / stride + 1;
-    layer->weights = create_matrix(kernel_size * kernel_size, layer->output_size);
+    layer->weights = create_matrix(layer->kernel_size, layer->kernel_size);
     layer->bias = create_matrix(1, layer->output_size);
     layer->input = NULL;
     layer->output = NULL;
     layer->delta = NULL;
-    initialize_weights_xavier_norm(kernel_size * kernel_size, layer->output_size, layer->weights);
+    initialize_weights_xavier_norm(layer->input_size, layer->output_size, layer->weights);
     initialize_weights_xavier_norm(1, layer->output_size, layer->bias);
     return layer;
 }
@@ -47,35 +47,24 @@ void destroy_conv2d_layer(Conv2DLayer *layer) {
 // https://www.youtube.com/watch?v=bNb2fEVKeEo&
 Matrix *forward_conv2d(Conv2DLayer *layer, Matrix *input) {
     Matrix *padded_input = pad(input, layer->padding);
-    Matrix *result = create_matrix(layer->output_size, layer->output_size);
+
+    Matrix *convolved = convolve(padded_input, layer->weights, layer->stride, layer->kernel_size, layer->padding, layer->output_size);
 
     for (int i = 0; i < layer->output_size; i++) {
         for (int j = 0; j < layer->output_size; j++) {
-            Matrix *input_slice = get_slice(padded_input, i * layer->stride, j * layer->stride, layer->kernel_size, layer->kernel_size);
-
-            // dot product
-            float sum = 0;
-            for (int k = 0; k < layer->kernel_size; k++) {
-                for (int l = 0; l < layer->kernel_size; l++) {
-                    sum += input_slice->data[k][l] * layer->weights->data[k][l];
-                }
-            }
-
-            result->data[i][j] = sum + layer->bias->data[0][0];
-
-            destroy_matrix(input_slice);
-
-            // activation
-            result->data[i][j] = activate(result->data[i][j], layer->activation);
+            convolved->data[i][j] += layer->bias->data[0][j];
         }
     }
 
+    Matrix *activated = apply(convolved, layer->activation);
+
     destroy_matrix(padded_input);
+    destroy_matrix(convolved);
 
     layer->input = copy_matrix(input);
-    layer->output = copy_matrix(result);
+    layer->output = copy_matrix(activated);
 
-    return result;
+    return activated;
 }
 
 // where layer is the conv2d layer and loss gradient is the gradient of the loss function

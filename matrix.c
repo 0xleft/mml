@@ -349,3 +349,35 @@ Matrix *flip(Matrix *matrix) {
     }
     return result;
 }
+
+Matrix *convolve(Matrix *input, Matrix *kernel, int stride, int kernel_size, int padding, int output_size) {
+    // move output to internal cuz we can calcualte it here
+    // todo
+
+    Matrix *padded_input = pad(input, padding);
+    Matrix *result = create_matrix(output_size, output_size);
+
+    // todo flip kernel
+
+    for (int i = 0; i < output_size; i++) {
+        for (int j = 0; j < output_size; j++) {
+            Matrix *input_slice = get_slice(padded_input, i * stride, j * stride, kernel_size, kernel_size);
+
+            // dot product
+            float sum = 0;
+            for (int k = 0; k < kernel_size; k++) {
+                for (int l = 0; l < kernel_size; l++) {
+                    sum += input_slice->data[k][l] * kernel->data[k][l];
+                }
+            }
+
+            result->data[i][j] = sum;
+
+            destroy_matrix(input_slice);
+        }
+    }
+
+    destroy_matrix(padded_input);
+
+    return result;
+}
