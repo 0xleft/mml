@@ -20,7 +20,10 @@ int main() {
     print_matrix(output);
 
     for (int i = 0; i < 100; i++) {
-        printf("%f loss\n", train_input(network, input, expected, 0.1f));
+        float loss = train_input(network, input, expected, 0.1f);
+        if (i % 10 == 0) {
+            printf("loss %f\n", loss);
+        }
     }
 
     output = forward(network, input);
