@@ -340,11 +340,12 @@ Matrix *flatten(Matrix *matrix) {
     return result;
 }
 
+// rotate 180 degrees
 Matrix *flip(Matrix *matrix) {
     Matrix *result = create_matrix(matrix->rows, matrix->cols);
     for (int i = 0; i < matrix->rows; i++) {
-        for (int j = matrix->cols - 1; j >= 0; j--) {
-            result->data[i][matrix->cols - 1 - j] = matrix->data[i][j];
+        for (int j = 0; j < matrix->cols; ++j) {
+            result->data[i][j] = matrix->data[matrix->rows - i - 1][j];
         }
     }
     return result;
@@ -372,7 +373,7 @@ Matrix *convolve(Matrix *input, Matrix *kernel, int stride, int kernel_size, int
             }
 
             result->data[i][j] = sum;
-
+//
             destroy_matrix(input_slice);
         }
     }
