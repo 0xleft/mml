@@ -13,6 +13,7 @@ struct MaxPoolLayer {
     int output_size;
     Matrix *input;
     Matrix *output;
+    Matrix *mask;
 };
 
 typedef struct MaxPoolLayer MaxPoolLayer;
