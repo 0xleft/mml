@@ -20,6 +20,10 @@ int main() {
     Matrix *output = forward(network, input);
     print_matrix(output);
 
+    Matrix *a = backward_flatten(network->layers[1]->layer.flatten, output);
+    print_matrix(a);
+
+    destroy_matrix(a);
     destroy_matrix(input);
     destroy_matrix(output);
     destroy_network(network);

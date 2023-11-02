@@ -38,5 +38,13 @@ Matrix *forward_flatten(FlattenLayer *layer, Matrix *input) {
 }
 
 Matrix *backward_flatten(FlattenLayer *layer, Matrix *loss_gradient) {
-    return loss_gradient;
+    Matrix *result = create_matrix(layer->input_size, layer->input_size);
+
+    for (int i = 0; i < layer->input_size; i++) {
+        for (int j = 0; j < layer->input_size; j++) {
+            result->data[i][j] = loss_gradient->data[0][i * layer->input_size + j];
+        }
+    }
+
+    return result;
 }
