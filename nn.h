@@ -22,3 +22,4 @@ void destroy_network(Network *network);
 // maybe return final loss?
 void train_dataset(Network *network, Dataset *dataset, int epochs, float learning_rate);
 float train_input(Network *network, Matrix *input, Matrix *expected, float learning_rate);
+void backward(Network *network, Matrix *expected);

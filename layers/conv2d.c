@@ -71,10 +71,22 @@ Matrix *forward_conv2d(Conv2DLayer *layer, Matrix *input) {
 // returns the downstream gradient so other layers can use it
 // the goal of this function is to calculate layer->delta so we can later update the weights and biases
 Matrix *backward_conv2d(Conv2DLayer *layer, Matrix *loss_gradient) {
-    Matrix *result = create_matrix(layer->input_size, layer->input_size);
-
     // calculate the gradient of the loss function with respect to the weights
-    return result;
+    // find the padding needed
+    int padding = (layer->input_size - layer->output_size) / 2;
+    Matrix *weight_gradient = convolve(loss_gradient, layer->input, 1, layer->kernel_size, padding, layer->output_size);
+
+    // calculate the gradient of the loss function with respect to the input
+    Matrix *rotated_weights = flip(layer->weights);
+    Matrix *input_gradient = convolve(loss_gradient, rotated_weights, 1, layer->kernel_size, padding, layer->output_size);
+
+    layer->delta = copy_matrix(input_gradient);
+
+    destroy_matrix(weight_gradient);
+    destroy_matrix(rotated_weights);
+    destroy_matrix(input_gradient);
+
+    return input_gradient;
 }
 
 void update_conv2d(Conv2DLayer *layer, float learning_rate) {

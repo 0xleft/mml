@@ -359,6 +359,7 @@ Matrix *convolve(Matrix *input, Matrix *kernel, int stride, int kernel_size, int
     Matrix *result = create_matrix(output_size, output_size);
 
     // todo flip kernel
+    Matrix *flipped_kernel = flip(kernel);
 
     for (int i = 0; i < output_size; i++) {
         for (int j = 0; j < output_size; j++) {
@@ -368,7 +369,7 @@ Matrix *convolve(Matrix *input, Matrix *kernel, int stride, int kernel_size, int
             float sum = 0;
             for (int k = 0; k < kernel_size; k++) {
                 for (int l = 0; l < kernel_size; l++) {
-                    sum += input_slice->data[k][l] * kernel->data[k][l];
+                    sum += input_slice->data[k][l] * flipped_kernel->data[k][l];
                 }
             }
 
@@ -379,6 +380,7 @@ Matrix *convolve(Matrix *input, Matrix *kernel, int stride, int kernel_size, int
     }
 
     destroy_matrix(padded_input);
+    destroy_matrix(flipped_kernel);
 
     return result;
 }

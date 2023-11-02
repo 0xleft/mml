@@ -19,15 +19,13 @@ int main() {
     Matrix *output = forward(network, input);
     print_matrix(output);
 
-    for (int i = 0; i < 100; i++) {
+    for (int i = 0; i < 10000; i++) {
         float loss = train_input(network, input, expected, 0.1f);
-        if (i % 10 == 0) {
-            printf("loss %f\n", loss);
+
+        if (i % 100 == 0) {
+            printf("loss: %f\n", loss);
         }
     }
-
-    output = forward(network, input);
-    print_matrix(output);
 
     destroy_matrix(input);
     destroy_matrix(output);
