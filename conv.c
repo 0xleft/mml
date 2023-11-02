@@ -6,8 +6,9 @@
 
 int main() {
     Network *network;
-    network = create_network(1);
+    network = create_network(2);
     add_layer(network, create_maxpool_layer_l(7, 2, 3));
+    add_layer(network, create_flatten_layer_l(3));
 
     Matrix *input = from_image("tests/small.png");
     Matrix *expected = from_image("tests/small_expected.png");

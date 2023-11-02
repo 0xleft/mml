@@ -46,6 +46,5 @@ Matrix *forward_maxpool(MaxPoolLayer *layer, Matrix *input) {
 }
 
 Matrix *backward_maxpool(MaxPoolLayer *layer, Matrix *loss_gradient) {
-    // todo
-    return loss_gradient;
+
 }

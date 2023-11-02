@@ -42,6 +42,9 @@ void destroy_network(Network *network) {
             case MAXPOOL:
                 destroy_maxpool_layer(layer->layer.maxpool);
                 break;
+            case FLATTEN:
+                destroy_flatten_layer(layer->layer.flatten);
+                break;
         }
     }
     free(network->layers);
@@ -62,6 +65,9 @@ Matrix *forward(Network *network, Matrix *input) {
                 break;
             case MAXPOOL:
                 result = forward_maxpool(layer->layer.maxpool, result);
+                break;
+            case FLATTEN:
+                result = forward_flatten(layer->layer.flatten, result);
                 break;
         }
     }
@@ -103,6 +109,8 @@ void backward(Network *network, Matrix *expected) {
             case MAXPOOL:
                 output = layer->layer.maxpool->output;
                 break;
+            case FLATTEN:
+                output = layer->layer.flatten->output;
         }
 
         if (i == last_layer_index) {
@@ -118,6 +126,8 @@ void backward(Network *network, Matrix *expected) {
                 break;
             case MAXPOOL:
                 errors = backward_maxpool(layer->layer.maxpool, errors);
+            case FLATTEN:
+                errors = backward_flatten(layer->layer.flatten, errors);
         }
     }
 

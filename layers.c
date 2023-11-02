@@ -25,3 +25,10 @@ Layer *create_maxpool_layer_l(int input_size, int stride, int kernel_size) {
     layer->layer.maxpool = create_maxpool_layer(input_size, stride, kernel_size);
     return layer;
 }
+
+Layer *create_flatten_layer_l(int input_size) {
+    Layer *layer = malloc(sizeof(Layer));
+    layer->type = FLATTEN;
+    layer->layer.flatten = create_flatten_layer(input_size);
+    return layer;
+}

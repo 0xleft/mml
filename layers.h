@@ -8,11 +8,13 @@
 #include "layers/dense.h"
 #include "layers/conv2d.h"
 #include "layers/maxpool.h"
+#include "layers/flatten.h"
 
 enum LayerType {
     DENSE,
     CONV2D,
     MAXPOOL,
+    FLATTEN,
 };
 
 typedef enum LayerType LayerType;
@@ -21,6 +23,7 @@ union LayerUnion {
     DenseLayer *dense;
     Conv2DLayer *conv2d;
     MaxPoolLayer *maxpool;
+    FlattenLayer *flatten;
 };
 
 typedef union LayerUnion LayerUnion;
@@ -44,3 +47,7 @@ Layer *create_conv2d_layer_l(int stride, int padding, int kernel_size, int input
 // maxpool
 
 Layer *create_maxpool_layer_l(int input_size, int stride, int kernel_size);
+
+// flatten
+
+Layer *create_flatten_layer_l(int input_size);
