@@ -48,7 +48,11 @@ void destroy_conv2d_layer(Conv2DLayer *layer) {
 Matrix *forward_conv2d(Conv2DLayer *layer, Matrix *input) {
     Matrix *padded_input = pad(input, layer->padding);
 
-    Matrix *convolved = convolve(padded_input, layer->weights, layer->stride, layer->kernel_size, layer->padding, layer->output_size);
+    Matrix *flipped_weights = flip(layer->weights);
+
+    Matrix *convolved = convolve(padded_input, flipped_weights, layer->stride, layer->kernel_size, layer->padding, layer->output_size);
+
+    destroy_matrix(flipped_weights);
 
     for (int i = 0; i < layer->output_size; i++) {
         for (int j = 0; j < layer->output_size; j++) {
@@ -67,31 +71,10 @@ Matrix *forward_conv2d(Conv2DLayer *layer, Matrix *input) {
     return activated;
 }
 
-// where layer is the conv2d layer and loss gradient is the gradient of the loss function
-// returns the downstream gradient so other layers can use it
-// the goal of this function is to calculate layer->delta so we can later update the weights and biases
 Matrix *backward_conv2d(Conv2DLayer *layer, Matrix *loss_gradient) {
+    Matrix *d_F = convolve(layer->input, loss_gradient, 1, layer->kernel_size, 0, layer->kernel_size);
 
-    // gradient with respect to output
-    // find the padding ammount that makes it so the ouput is the size of layer_output
-    int padding = (layer->input_size - layer->output_size) / 2;
-    Matrix *d_Z = convolve(loss_gradient, layer->weights, 1, layer->kernel_size, padding, layer->output_size);
 
-    // find d_W
-    // todo padding
-    Matrix *d_W = convolve(layer->input, d_Z, 1, layer->kernel_size, 0, layer->output_size);
-
-    // find d_B
-    Matrix *d_B = create_matrix(1, layer->weights->cols);
-    for (int i = 0; i < layer->weights->cols; i++) {
-        float sum = 0;
-        for (int j = 0; j < d_Z->rows; j++) {
-            sum += d_Z->data[j][i];
-        }
-        d_B->data[0][i] = sum;
-    }
-
-    return d_Z;
 }
 
 void update_conv2d(Conv2DLayer *layer, float learning_rate) {
