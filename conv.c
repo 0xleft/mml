@@ -7,7 +7,7 @@
 int main() {
     Network *network;
     network = create_network(1);
-    add_layer(network, create_conv2d_layer_l(1, 0, 3, 7, RELU, 0.0f, 0.0f));
+    add_layer(network, create_maxpool_layer_l(7, 2, 3));
 
     Matrix *input = from_image("tests/small.png");
     Matrix *expected = from_image("tests/small_expected.png");
@@ -18,14 +18,6 @@ int main() {
 
     Matrix *output = forward(network, input);
     print_matrix(output);
-
-    for (int i = 0; i < 10000; i++) {
-        float loss = train_input(network, input, expected, 0.1f);
-
-        if (i % 100 == 0) {
-            printf("loss: %f\n", loss);
-        }
-    }
 
     destroy_matrix(input);
     destroy_matrix(output);

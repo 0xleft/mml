@@ -18,6 +18,8 @@ add_executable(mml main.c
         layers/conv2d.h
         layers/common.c
         layers/common.h
+        layers/maxpool.c
+        layers/maxpool.h
 )
 
 add_executable(test test.c
@@ -35,6 +37,8 @@ add_executable(test test.c
         layers/conv2d.h
         layers/common.c
         layers/common.h
+        layers/maxpool.c
+        layers/maxpool.h
 )
 
 add_executable(logic_gates logic.c
@@ -52,6 +56,8 @@ add_executable(logic_gates logic.c
         layers/conv2d.h
         layers/common.c
         layers/common.h
+        layers/maxpool.c
+        layers/maxpool.h
 )
 
 add_executable(conv conv.c
@@ -69,6 +75,8 @@ add_executable(conv conv.c
         layers/conv2d.h
         layers/common.c
         layers/common.h
+        layers/maxpool.c
+        layers/maxpool.h
 )
 
 # include math

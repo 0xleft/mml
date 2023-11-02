@@ -72,9 +72,51 @@ Matrix *forward_conv2d(Conv2DLayer *layer, Matrix *input) {
 }
 
 Matrix *backward_conv2d(Conv2DLayer *layer, Matrix *loss_gradient) {
-    Matrix *d_F = convolve(layer->input, loss_gradient, 1, layer->kernel_size, 0, layer->kernel_size);
+    // The backward computation for a convolution function
+    //
+    //    Arguments:
+    //    dH -- gradient of the cost with respect to output of the conv layer (H), numpy array of shape (n_H, n_W) assuming channels = 1
+    //    cache -- cache of values needed for the conv_backward(), output of conv_forward()
+    //
+    //    Returns:
+    //    dX -- gradient of the cost with respect to input of the conv layer (X), numpy array of shape (n_H_prev, n_W_prev) assuming channels = 1
+    //    dW -- gradient of the cost with respect to the weights of the conv layer (W), numpy array of shape (f,f) assuming single filter
+    //    '''
+    //
+    //    # Retrieving information from the "cache"
+    //    (X, W) = cache
+    //
+    //    # Retrieving dimensions from X's shape
+    //    (n_H_prev, n_W_prev) = X.shape
+    //
+    //    # Retrieving dimensions from W's shape
+    //    (f, f) = W.shape
+    //
+    //    # Retrieving dimensions from dH's shape
+    //    (n_H, n_W) = dH.shape
+    //
+    //    # Initializing dX, dW with the correct shapes
+    //    dX = np.zeros(X.shape)
+    //    dW = np.zeros(W.shape)
+    //
+    //    # Looping over vertical(h) and horizontal(w) axis of the output
+    //    for h in range(n_H):
+    //        for w in range(n_W):
+    //            dX[h:h+f, w:w+f] += W * dH(h,w)
+    //            dW += X[h:h+f, w:w+f] * dH(h,w)
+    //
 
+    Matrix *dX = create_matrix(layer->input->rows, layer->input->cols);
+    Matrix *dW = create_matrix(layer->weights->rows, layer->weights->cols);
 
+    for (int h = 0; h < layer->output_size; h++) {
+        for (int w = 0; w < layer->output_size; w++) {
+            dX->data[h][w] += layer->weights->data[h][w] * loss_gradient->data[h][w];
+            dW->data[h][w] += layer->input->data[h][w] * loss_gradient->data[h][w];
+        }
+    }
+
+    return dX;
 }
 
 void update_conv2d(Conv2DLayer *layer, float learning_rate) {

@@ -39,6 +39,9 @@ void destroy_network(Network *network) {
             case CONV2D:
                 destroy_conv2d_layer(layer->layer.conv2d);
                 break;
+            case MAXPOOL:
+                destroy_maxpool_layer(layer->layer.maxpool);
+                break;
         }
     }
     free(network->layers);
@@ -56,6 +59,9 @@ Matrix *forward(Network *network, Matrix *input) {
                 break;
             case CONV2D:
                 result = forward_conv2d(layer->layer.conv2d, result);
+                break;
+            case MAXPOOL:
+                result = forward_maxpool(layer->layer.maxpool, result);
                 break;
         }
     }
@@ -94,6 +100,9 @@ void backward(Network *network, Matrix *expected) {
             case CONV2D:
                 output = layer->layer.conv2d->output;
                 break;
+            case MAXPOOL:
+                output = layer->layer.maxpool->output;
+                break;
         }
 
         if (i == last_layer_index) {
@@ -107,8 +116,8 @@ void backward(Network *network, Matrix *expected) {
             case CONV2D:
                 errors = backward_conv2d(layer->layer.conv2d, errors);
                 break;
-            default:
-                break;
+            case MAXPOOL:
+                errors = backward_maxpool(layer->layer.maxpool, errors);
         }
     }
 
@@ -126,7 +135,8 @@ void update(Network *network, float learning_rate) {
             case CONV2D:
                 update_conv2d(layer->layer.conv2d, learning_rate);
                 break;
-            default:
+            case MAXPOOL:
+                // eh
                 break;
         }
     }

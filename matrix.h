@@ -48,4 +48,5 @@ Matrix *from_image(char *filename);
 Matrix *flatten(Matrix *matrix);
 float activate(float x, Activation activation);
 Matrix *flip(Matrix *matrix);
+float max(Matrix *matrix);
 Matrix *convolve(Matrix *input, Matrix *kernel, int stride, int kernel_size, int padding, int output_size);

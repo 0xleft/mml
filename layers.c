@@ -18,3 +18,10 @@ Layer *create_conv2d_layer_l(int stride, int padding, int kernel_size, int input
     layer->layer.conv2d = create_conv2d_layer(stride, padding, kernel_size, input_size, activation, epsilon, decay_rate);
     return layer;
 }
+
+Layer *create_maxpool_layer_l(int input_size, int stride, int kernel_size) {
+    Layer *layer = malloc(sizeof(Layer));
+    layer->type = MAXPOOL;
+    layer->layer.maxpool = create_maxpool_layer(input_size, stride, kernel_size);
+    return layer;
+}

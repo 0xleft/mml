@@ -384,3 +384,16 @@ Matrix *convolve(Matrix *input, Matrix *kernel, int stride, int kernel_size, int
 
     return result;
 }
+
+float max(Matrix *matrix) {
+    float max = -1000000000000000000.0f;
+    for (int i = 0; i < matrix->rows; i++) {
+        for (int j = 0; j < matrix->cols; j++) {
+            if (max < matrix->data[i][j]) {
+                max = matrix->data[i][j];
+            }
+        }
+    }
+
+    return max;
+}
