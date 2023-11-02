@@ -71,22 +71,27 @@ Matrix *forward_conv2d(Conv2DLayer *layer, Matrix *input) {
 // returns the downstream gradient so other layers can use it
 // the goal of this function is to calculate layer->delta so we can later update the weights and biases
 Matrix *backward_conv2d(Conv2DLayer *layer, Matrix *loss_gradient) {
-    // calculate the gradient of the loss function with respect to the weights
-    // find the padding needed
+
+    // gradient with respect to output
+    // find the padding ammount that makes it so the ouput is the size of layer_output
     int padding = (layer->input_size - layer->output_size) / 2;
-    Matrix *weight_gradient = convolve(loss_gradient, layer->input, 1, layer->kernel_size, padding, layer->output_size);
+    Matrix *d_Z = convolve(loss_gradient, layer->weights, 1, layer->kernel_size, padding, layer->output_size);
 
-    // calculate the gradient of the loss function with respect to the input
-    Matrix *rotated_weights = flip(layer->weights);
-    Matrix *input_gradient = convolve(loss_gradient, rotated_weights, 1, layer->kernel_size, padding, layer->output_size);
+    // find d_W
+    // todo padding
+    Matrix *d_W = convolve(layer->input, d_Z, 1, layer->kernel_size, 0, layer->output_size);
 
-    layer->delta = copy_matrix(input_gradient);
+    // find d_B
+    Matrix *d_B = create_matrix(1, layer->weights->cols);
+    for (int i = 0; i < layer->weights->cols; i++) {
+        float sum = 0;
+        for (int j = 0; j < d_Z->rows; j++) {
+            sum += d_Z->data[j][i];
+        }
+        d_B->data[0][i] = sum;
+    }
 
-    destroy_matrix(weight_gradient);
-    destroy_matrix(rotated_weights);
-    destroy_matrix(input_gradient);
-
-    return input_gradient;
+    return d_Z;
 }
 
 void update_conv2d(Conv2DLayer *layer, float learning_rate) {
@@ -102,7 +107,7 @@ void update_conv2d(Conv2DLayer *layer, float learning_rate) {
             float weight_gradient = delta * layer->input->data[0][k];
             float bias_gradient = delta;
             layer->weights->data[j][k] = weight - learning_rate * weight_gradient;
-            layer->bias->data[0][j] = weight - learning_rate * bias_gradient;
+            // layer->bias->data[0][j] = weight - learning_rate * bias_gradient;
         }
     }
 
