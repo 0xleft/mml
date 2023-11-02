@@ -23,6 +23,10 @@ int main() {
     Matrix *a = backward_flatten(network->layers[1]->layer.flatten, output);
     print_matrix(a);
 
+    Matrix *b = backward_maxpool(network->layers[0]->layer.maxpool, a);
+    print_matrix(b);
+
+    destroy_matrix(b);
     destroy_matrix(a);
     destroy_matrix(input);
     destroy_matrix(output);

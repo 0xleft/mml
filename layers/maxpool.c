@@ -58,12 +58,26 @@ Matrix *forward_maxpool(MaxPoolLayer *layer, Matrix *input) {
         }
     }
 
+    layer->mask = mask;
+
     return result;
 }
 
 Matrix *backward_maxpool(MaxPoolLayer *layer, Matrix *loss_gradient) {
     Matrix *dout = create_matrix(layer->input_size, layer->input_size);
 
+    for (int i = 0; i < loss_gradient->rows; i++) {
+        for (int j = 0; j < loss_gradient->cols; j++) {
+
+            float d_X = loss_gradient->data[i][j];
+
+            for (int k = i * layer->stride; k < i * layer->stride + layer->kernel_size; k++) {
+                for (int p = j * layer->stride; p < j * layer->stride + layer->kernel_size; p++) {
+                    dout->data[k][p] = layer->mask->data[k][p] * d_X;
+                }
+            }
+        }
+    }
 
     return dout;
 }
