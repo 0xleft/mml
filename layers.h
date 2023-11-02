@@ -42,12 +42,12 @@ Layer *create_dense_layer_l(int input_size, int output_size, Activation activati
 
 // conv
 
-Layer *create_conv2d_layer_l(int stride, int padding, int kernel_size, int input_size, Activation activation, float epsilon, float decay_rate);
+Layer *create_conv2d_layer_l(int input_count, int filter_count, int stride, int padding, int kernel_size, int input_size, Activation activation, float epsilon, float decay_rate);
 
 // maxpool
 
-Layer *create_maxpool_layer_l(int input_size, int stride, int kernel_size);
+Layer *create_maxpool_layer_l(int input_size, int input_count, int stride, int kernel_size);
 
 // flatten
 
-Layer *create_flatten_layer_l(int input_size);
+Layer *create_flatten_layer_l(int input_size, int input_count);

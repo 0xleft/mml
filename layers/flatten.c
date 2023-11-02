@@ -4,9 +4,10 @@
 
 #include "flatten.h"
 
-FlattenLayer *create_flatten_layer(int input_size) {
+FlattenLayer *create_flatten_layer(int input_size, int input_count) {
     FlattenLayer *layer = malloc(sizeof(FlattenLayer));
     layer->input_size = input_size;
+    layer->input_count = input_count;
     layer->output = NULL;
     return layer;
 }
@@ -23,26 +24,33 @@ void destroy_flatten_layer(FlattenLayer *layer) {
     layer = NULL;
 }
 
-Matrix *forward_flatten(FlattenLayer *layer, Matrix *input) {
-    Matrix *result = create_matrix(1, input->cols*input->rows);
+Matrix *forward_flatten(FlattenLayer *layer, Matrix **input) {
+    Matrix *result = create_matrix(1, layer->input_size * layer->input_size * layer->input_count);
 
-    for (int i = 0; i < input->rows; i++) {
-        for (int j = 0; j < input->cols; j++) {
-            result->data[0][i * input->rows + j] = input->data[i][j];
+    int index = 0;
+    for (int i = 0; i < layer->input_count; i++) {
+        for (int j = 0; j < layer->input_size; j++) {
+            for (int k = 0; k < layer->input_size; k++) {
+                result->data[0][index] = input[i]->data[j][k];
+                index++;
+            }
         }
     }
-
-    layer->output = result;
 
     return result;
 }
 
-Matrix *backward_flatten(FlattenLayer *layer, Matrix *loss_gradient) {
-    Matrix *result = create_matrix(layer->input_size, layer->input_size);
+Matrix **backward_flatten(FlattenLayer *layer, Matrix *loss_gradient) {
+    Matrix **result = malloc(sizeof(Matrix *) * layer->input_count);
 
-    for (int i = 0; i < layer->input_size; i++) {
+    int index = 0;
+    for (int i = 0; i < layer->input_count; i++) {
+        result[i] = create_matrix(layer->input_size, layer->input_size);
         for (int j = 0; j < layer->input_size; j++) {
-            result->data[i][j] = loss_gradient->data[0][i * layer->input_size + j];
+            for (int k = 0; k < layer->input_size; k++) {
+                result[i]->data[j][k] = loss_gradient->data[0][index];
+                index++;
+            }
         }
     }
 

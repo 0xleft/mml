@@ -53,12 +53,14 @@ void destroy_network(Network *network) {
 }
 
 Matrix *forward(Network *network, Matrix *input) {
-    Matrix *result = input;
+    // yeah some sunzu shit right here
+    Matrix **result = malloc(sizeof(Matrix *));
+    result[0] = input;
     for (int i = 0; i < network->layer_count; i++) {
         Layer *layer = network->layers[i];
         switch (layer->type) {
             case DENSE:
-                result = forward_dense(layer->layer.dense, result);
+                result[0] = forward_dense(layer->layer.dense, result[0]);
                 break;
             case CONV2D:
                 result = forward_conv2d(layer->layer.conv2d, result);
@@ -67,11 +69,12 @@ Matrix *forward(Network *network, Matrix *input) {
                 result = forward_maxpool(layer->layer.maxpool, result);
                 break;
             case FLATTEN:
-                result = forward_flatten(layer->layer.flatten, result);
+                result[0] = forward_flatten(layer->layer.flatten, result);
                 break;
         }
     }
-    return result;
+
+    return result[0];
 }
 
 // 2f
@@ -95,13 +98,13 @@ float calc_loss(Matrix *output, Matrix *expected) {
 
 void backward(Network *network, Matrix *expected) {
     int last_layer_index = network->layer_count - 1;
-    Matrix *errors = NULL;
+    Matrix **errors = malloc(sizeof(Matrix *) * network->layer_count);
     for (int i = last_layer_index; i >= 0; i--) {
         Layer *layer = network->layers[i];
-        Matrix *output = NULL;
+        Matrix **output = malloc(sizeof(Matrix *));
         switch (layer->type) {
             case DENSE:
-                output = layer->layer.dense->output;
+                output[0] = layer->layer.dense->output;
                 break;
             case CONV2D:
                 output = layer->layer.conv2d->output;
@@ -110,16 +113,16 @@ void backward(Network *network, Matrix *expected) {
                 output = layer->layer.maxpool->output;
                 break;
             case FLATTEN:
-                output = layer->layer.flatten->output;
+                output[0] = layer->layer.flatten->output;
         }
 
         if (i == last_layer_index) {
-            errors = calc_loss_gradient(output, expected);
+            errors[0] = calc_loss_gradient(output[0], expected);
         }
 
         switch (layer->type) {
             case DENSE:
-                errors = backward_dense(layer->layer.dense, errors);
+                errors[0] = backward_dense(layer->layer.dense, errors[0]);
                 break;
             case CONV2D:
                 errors = backward_conv2d(layer->layer.conv2d, errors);
@@ -127,7 +130,7 @@ void backward(Network *network, Matrix *expected) {
             case MAXPOOL:
                 errors = backward_maxpool(layer->layer.maxpool, errors);
             case FLATTEN:
-                errors = backward_flatten(layer->layer.flatten, errors);
+                errors = backward_flatten(layer->layer.flatten, errors[0]);
         }
     }
 
@@ -147,6 +150,8 @@ void update(Network *network, float learning_rate) {
                 break;
             case MAXPOOL:
                 // eh
+                break;
+            case FLATTEN:
                 break;
         }
     }
