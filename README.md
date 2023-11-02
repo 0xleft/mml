@@ -8,16 +8,17 @@ Simple machine learning project written in pure c.
 - [x] Back propagation
 - [x] RMSProp optimizer
 - [x] Datasets
+- [x] Max pooling
+- [x] Flatten
 
 ## TODO
 
+- [ ] Mnist
 - [ ] Convolutional neural network
 - [ ] Adam optimizer
 - [ ] Dropout
 - [ ] Momentum
 - [ ] Config stuff
-- [ ] Remove hard coded RMSProp
-- [ ] Implement different layer types
 
 ## Dependencies
 
