@@ -54,7 +54,7 @@ void destroy_network(Network *network) {
 
 Matrix *forward(Network *network, Matrix *input) {
     // yeah some sunzu shit right here
-    Matrix **result = malloc(sizeof(Matrix *));
+    Matrix **result = malloc(sizeof(Matrix));
     result[0] = input;
     for (int i = 0; i < network->layer_count; i++) {
         Layer *layer = network->layers[i];
@@ -146,7 +146,6 @@ void update(Network *network, float learning_rate) {
                 update_dense(layer->layer.dense, learning_rate);
                 break;
             case CONV2D:
-                update_conv2d(layer->layer.conv2d, learning_rate);
                 break;
             case MAXPOOL:
                 // eh

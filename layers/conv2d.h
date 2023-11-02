@@ -31,4 +31,3 @@ Conv2DLayer *create_conv2d_layer(int input_count, int filter_count, int stride, 
 void destroy_conv2d_layer(Conv2DLayer *layer);
 Matrix **forward_conv2d(Conv2DLayer *layer, Matrix **input);
 Matrix **backward_conv2d(Conv2DLayer *layer, Matrix **loss_gradient);
-void update_conv2d(Conv2DLayer *layer, float learning_rate);

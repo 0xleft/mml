@@ -12,10 +12,17 @@ int main() {
     // output is now 32x32x32
     add_layer(network, create_maxpool_layer_l(32, 32, 2, 2));
     // output is now 16x16x32
+    add_layer(network, create_flatten_layer_l(16, 32));
+    // now its 1x(32 * 16 * 16)
+    add_layer(network, create_dense_layer_l(8192, 10, SOFTMAX, 0.0, 0.0));
+    // now its 1x10
 
     Matrix *input = create_matrix(32, 32);
 
     Matrix *output = forward(network, input);
+    print_matrix(output);
+
+    //backward(network, create_matrix_from_array(1, 10, (float[]) {0,0,0,0,0,0,0,0,0,0,0}));
 
     destroy_network(network);
     return 0;

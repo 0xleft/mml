@@ -11,9 +11,9 @@ MaxPoolLayer *create_maxpool_layer(int input_size, int input_count, int stride, 
     layer->output_size = (input_size - kernel_size + 2 * 0) / stride + 1;
     layer->stride = stride;
     layer->kernel_size = kernel_size;
-    layer->input = NULL;
-    layer->output = NULL;
-    layer->mask = NULL;
+    layer->input = malloc(sizeof(Matrix *) * input_count);
+    layer->output = malloc(sizeof(Matrix *) * input_count);
+    layer->mask = malloc(sizeof(Matrix *) * input_count);
     return layer;
 }
 
@@ -42,6 +42,7 @@ Matrix *forward_maxpool_single(MaxPoolLayer *layer, Matrix *input, int index) {
             float max_value = max(input_slice);
             result->data[i][j] = max_value;
 
+            // create mask
             int o = 0;
             for (int k = i * layer->stride; k < i * layer->stride + layer->kernel_size; k++) {
                 int s = 0;
@@ -58,8 +59,8 @@ Matrix *forward_maxpool_single(MaxPoolLayer *layer, Matrix *input, int index) {
         }
     }
 
-    layer->mask[index] = mask;
 
+    layer->mask[index] = mask;
     return result;
 }
 
@@ -68,6 +69,8 @@ Matrix **forward_maxpool(MaxPoolLayer *layer, Matrix **input) {
 
     for (int i = 0; i < layer->input_count; i++) {
         output[i] = forward_maxpool_single(layer, input[i], i);
+        layer->input[i] = copy_matrix(input[i]);
+        layer->output[i] = copy_matrix(output[i]);
     }
 
     return output;
