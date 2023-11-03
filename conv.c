@@ -17,12 +17,18 @@ int main() {
     add_layer(network, create_dense_layer_l(8192, 10, SOFTMAX, 0.0, 0.0));
     // now its 1x10
 
-    Matrix *input = create_matrix(32, 32);
+    Matrix *input = from_image("tests/smile.png");
+    print_matrix(input);
 
     Matrix *output = forward(network, input);
     print_matrix(output);
 
-    backward(network, create_matrix_from_array(1, 10, (float[]) {0,0,0,0,0,0,0,0,0,0,0}));
+    for (int i = 0; i < 1000; i++) {
+        float loss = train_input(network, input, create_matrix_from_array(1, 10, (float[]) {1, 0, 0, 0, 0, 0, 0, 0, 0, 0}), 0.01);
+        if (i % 100 == 0) {
+            printf("loss: %f\n", loss);
+        }
+    }
 
     destroy_network(network);
     return 0;
