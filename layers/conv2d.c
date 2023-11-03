@@ -92,7 +92,41 @@ Matrix **forward_conv2d(Conv2DLayer *layer, Matrix **input) {
 }
 
 Matrix *backward_conv2d_single(Conv2DLayer *layer, Matrix *loss_gradient, int filter_index) {
-    return create_matrix(1, 1);
+    // wi* = wi - a * dL/dwi
+    // calculate dL/dwi (matrix of partial derivatives)
+
+    Matrix *padded_input = pad(layer->input[filter_index], layer->padding);
+
+    // for every w in kernel
+    for (int i = 0; i < layer->output_size; i++) {
+        for (int j = 0; j < layer->output_size; j++) {
+            Matrix *a_m = get_slice(padded_input, i * layer->stride, j * layer->stride, layer->kernel_size, layer->kernel_size);
+
+            Matrix *dL_dz = get_slice(loss_gradient, i, j, 1, 1);
+
+            Matrix *dL_dw = multiply_s(a_m, dL_dz->data[0][0]);
+
+            // update weights
+            for (int k = 0; k < layer->kernel_size; k++) {
+                for (int l = 0; l < layer->kernel_size; l++) {
+                    layer->weights[filter_index]->data[k][l] -= 1 * dL_dw->data[k][l];
+                }
+            }
+
+            // update bias
+            for (int k = 0; k < layer->output_size; k++) {
+                layer->bias[filter_index]->data[0][k] -= 1 * dL_dz->data[0][k];
+            }
+
+            destroy_matrix(dL_dw);
+            destroy_matrix(a_m);
+            destroy_matrix(dL_dz);
+        }
+    }
+
+    destroy_matrix(padded_input);
+
+    return copy_matrix(loss_gradient);
 }
 
 Matrix **backward_conv2d(Conv2DLayer *layer, Matrix **loss_gradient) {
