@@ -118,9 +118,8 @@ void test_matrix_functions() {
         printf(RED"flatten failed\n"RESET);
     }
 
-    // test horizontal flip
-    Matrix *flipped = flip(l);
-    if (flipped->data[0][0] != 3 || flipped->data[0][1] != 4 || flipped->data[1][0] != 1 || flipped->data[1][1] != 2) {
+    Matrix *ac = flip(a);
+    if (ac->data[0][0] != 4 || ac->data[0][1] != 3 || ac->data[1][0] != 2 || ac->data[1][1] != 1) {
         printf(RED"flip failed\n"RESET);
     }
 
@@ -139,7 +138,7 @@ void test_matrix_functions() {
     destroy_matrix(image);
     destroy_matrix(slice);
     destroy_matrix(flat);
-    destroy_matrix(flipped);
+    destroy_matrix(ac);
 }
 
 void test_nn_functions() {
