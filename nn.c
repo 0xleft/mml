@@ -98,10 +98,10 @@ float calc_loss(Matrix *output, Matrix *expected) {
 
 void backward(Network *network, Matrix *expected) {
     int last_layer_index = network->layer_count - 1;
-    Matrix **errors = malloc(sizeof(Matrix *) * network->layer_count);
+    Matrix **output = malloc(sizeof(Matrix));
+    Matrix **errors = malloc(sizeof(Matrix));
     for (int i = last_layer_index; i >= 0; i--) {
         Layer *layer = network->layers[i];
-        Matrix **output = malloc(sizeof(Matrix *));
         switch (layer->type) {
             case DENSE:
                 output[0] = layer->layer.dense->output;
@@ -114,6 +114,7 @@ void backward(Network *network, Matrix *expected) {
                 break;
             case FLATTEN:
                 output[0] = layer->layer.flatten->output;
+                break;
         }
 
         if (i == last_layer_index) {
@@ -129,11 +130,14 @@ void backward(Network *network, Matrix *expected) {
                 break;
             case MAXPOOL:
                 errors = backward_maxpool(layer->layer.maxpool, errors);
+                break;
             case FLATTEN:
                 errors = backward_flatten(layer->layer.flatten, errors[0]);
+                break;
         }
     }
 
+    // free
     // TODO investigate why double free :(
     //destroy_matrix(errors);
 }

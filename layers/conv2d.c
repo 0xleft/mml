@@ -92,15 +92,17 @@ Matrix **forward_conv2d(Conv2DLayer *layer, Matrix **input) {
 }
 
 Matrix *backward_conv2d_single(Conv2DLayer *layer, Matrix *loss_gradient, int filter_index) {
-    return copy_matrix(loss_gradient);
+    return create_matrix(1, 1);
 }
 
 Matrix **backward_conv2d(Conv2DLayer *layer, Matrix **loss_gradient) {
-    Matrix **dout = malloc(sizeof(Matrix) * layer->input_count);
+    Matrix **dout = malloc(sizeof(Matrix) * layer->input_count * layer->filter_count);
 
     for (int i = 0; i < layer->input_count; i++) {
-        Matrix *dout_s = backward_conv2d_single(layer, loss_gradient[i], i);
-        dout[i] = dout_s;
+        for (int j = 0; j < layer->filter_count; j++) {
+            Matrix *result = backward_conv2d_single(layer, loss_gradient[i], i * layer->filter_count + j);
+            destroy_matrix(result);
+        }
         destroy_matrix(loss_gradient[i]);
     }
 

@@ -22,7 +22,7 @@ int main() {
     Matrix *output = forward(network, input);
     print_matrix(output);
 
-    //backward(network, create_matrix_from_array(1, 10, (float[]) {0,0,0,0,0,0,0,0,0,0,0}));
+    backward(network, create_matrix_from_array(1, 10, (float[]) {0,0,0,0,0,0,0,0,0,0,0}));
 
     destroy_network(network);
     return 0;

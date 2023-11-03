@@ -26,6 +26,9 @@ void destroy_maxpool_layer(MaxPoolLayer *layer) {
         destroy_matrix(layer->output[i]);
         destroy_matrix(layer->mask[i]);
     }
+    free(layer->input);
+    free(layer->output);
+    free(layer->mask);
     free(layer);
     layer = NULL;
 }
@@ -100,6 +103,7 @@ Matrix **backward_maxpool(MaxPoolLayer *layer, Matrix **loss_gradient) {
 
     for (int i = 0; i < layer->input_count; i++) {
         dout[i] = backward_maxpool_single(layer, loss_gradient[i], i);
+        destroy_matrix(loss_gradient[i]);
     }
 
     return dout;
