@@ -12,10 +12,10 @@ Layer *create_dense_layer_l(int input_size, int output_size, Activation activati
     return layer;
 }
 
-Layer *create_conv2d_layer_l(int input_count, int filter_count, int stride, int padding, int kernel_size, int input_size, Activation activation, float epsilon, float decay_rate) {
+Layer *create_conv2d_layer_l(int output_size, int input_count, int filter_count, int stride, int padding, int kernel_size, int input_size, Activation activation, float epsilon, float decay_rate) {
     Layer *layer = malloc(sizeof(Layer));
     layer->type = CONV2D;
-    layer->layer.conv2d = create_conv2d_layer(input_count, filter_count, stride, padding, kernel_size, input_size, activation, epsilon, decay_rate);
+    layer->layer.conv2d = create_conv2d_layer(output_size, input_count, filter_count, stride, padding, kernel_size, input_size, activation, epsilon, decay_rate);
     return layer;
 }
 

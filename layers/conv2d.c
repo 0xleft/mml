@@ -5,7 +5,7 @@
 #include "conv2d.h"
 #include "../matrix.h"
 
-Conv2DLayer *create_conv2d_layer(int input_count, int filter_count, int stride, int padding, int kernel_size, int input_size, Activation activation, float epsilon, float decay_rate) {
+Conv2DLayer *create_conv2d_layer(int output_size, int input_count, int filter_count, int stride, int padding, int kernel_size, int input_size, Activation activation, float epsilon, float decay_rate) {
     Conv2DLayer *layer = malloc(sizeof(Conv2DLayer));
     layer->stride = stride;
     layer->padding = padding;
@@ -17,7 +17,7 @@ Conv2DLayer *create_conv2d_layer(int input_count, int filter_count, int stride, 
     layer->epsilon = epsilon;
     layer->decay_rate = decay_rate;
     // input size means nxn input n for input_size
-    layer->output_size = (input_size - kernel_size + 2 * padding) / stride + 1;
+    layer->output_size = output_size;
     layer->weights = malloc(sizeof(Matrix) * filter_count);
     layer->bias = malloc(sizeof(Matrix) * filter_count);
     for (int i = 0; i < filter_count; i++) {
@@ -32,7 +32,7 @@ Conv2DLayer *create_conv2d_layer(int input_count, int filter_count, int stride, 
     layer->input = malloc(sizeof(Matrix) * input_count * filter_count);
     layer->output = malloc(sizeof(Matrix) * input_count * filter_count);
 
-    printf("Created input, output, and delta for %d inputs\n", input_count);
+    printf("Created input, output, and delta for %d inputs\n", input_count * filter_count);
     return layer;
 }
 
@@ -95,38 +95,43 @@ Matrix *backward_conv2d_single(Conv2DLayer *layer, Matrix *loss_gradient, int fi
     // wi* = wi - a * dL/dwi
     // calculate dL/dwi (matrix of partial derivatives)
 
+    Matrix *dW = create_matrix(layer->kernel_size, layer->kernel_size);
     Matrix *padded_input = pad(layer->input[filter_index], layer->padding);
 
     // for every w in kernel
     for (int i = 0; i < layer->output_size; i++) {
         for (int j = 0; j < layer->output_size; j++) {
             Matrix *a_m = get_slice(padded_input, i * layer->stride, j * layer->stride, layer->kernel_size, layer->kernel_size);
+            float dL_dz = loss_gradient->data[i][j];
+            Matrix *dL_dw_element = multiply_s(a_m, dL_dz);
 
-            Matrix *dL_dz = get_slice(loss_gradient, i, j, 1, 1);
-
-            Matrix *dL_dw = multiply_s(a_m, dL_dz->data[0][0]);
-
-            // update weights
             for (int k = 0; k < layer->kernel_size; k++) {
                 for (int l = 0; l < layer->kernel_size; l++) {
-                    layer->weights[filter_index]->data[k][l] -= 1 * dL_dw->data[k][l];
+                    dW->data[k][l] += dL_dw_element->data[k][l];
                 }
             }
 
-            // update bias
-            for (int k = 0; k < layer->output_size; k++) {
-                layer->bias[filter_index]->data[0][k] -= 1 * dL_dz->data[0][k];
-            }
-
-            destroy_matrix(dL_dw);
+            destroy_matrix(dL_dw_element);
             destroy_matrix(a_m);
-            destroy_matrix(dL_dz);
         }
     }
 
+    // update weights
+    for (int k = 0; k < layer->kernel_size; k++) {
+        for (int l = 0; l < layer->kernel_size; l++) {
+            layer->weights[filter_index]->data[k][l] -= 1 * dW->data[k][l];
+        }
+    }
+
+    // update bias
+    for (int k = 0; k < layer->output_size; k++) {
+        layer->bias[filter_index]->data[0][k] -= 1 * dW->data[0][k];
+    }
+
+    destroy_matrix(dW);
     destroy_matrix(padded_input);
 
-    return copy_matrix(loss_gradient);
+    return NULL;
 }
 
 Matrix **backward_conv2d(Conv2DLayer *layer, Matrix **loss_gradient) {
@@ -135,7 +140,7 @@ Matrix **backward_conv2d(Conv2DLayer *layer, Matrix **loss_gradient) {
     for (int i = 0; i < layer->input_count; i++) {
         for (int j = 0; j < layer->filter_count; j++) {
             Matrix *result = backward_conv2d_single(layer, loss_gradient[i], i * layer->filter_count + j);
-            destroy_matrix(result);
+            dout[i * layer->filter_count + j] = result;
         }
         destroy_matrix(loss_gradient[i]);
     }

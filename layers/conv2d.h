@@ -27,7 +27,7 @@ struct Conv2DLayer {
 
 typedef struct Conv2DLayer Conv2DLayer;
 
-Conv2DLayer *create_conv2d_layer(int input_count, int filter_count, int stride, int padding, int kernel_size, int input_size, Activation activation, float epsilon, float decay_rate);
+Conv2DLayer *create_conv2d_layer(int output_size, int input_count, int filter_count, int stride, int padding, int kernel_size, int input_size, Activation activation, float epsilon, float decay_rate);
 void destroy_conv2d_layer(Conv2DLayer *layer);
 Matrix **forward_conv2d(Conv2DLayer *layer, Matrix **input);
 Matrix **backward_conv2d(Conv2DLayer *layer, Matrix **loss_gradient);

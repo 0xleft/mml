@@ -24,6 +24,15 @@ struct Matrix {
 
 typedef struct Matrix Matrix;
 
+struct Matrix3D {
+    Matrix **data;
+    int depth;
+};
+
+typedef struct Matrix3D Matrix3D;
+
+Matrix3D *create_matrix_3d(int depth);
+void destroy_matrix_3d(Matrix3D *matrix);
 Matrix *create_matrix(int rows, int cols);
 Matrix *transpose(Matrix *matrix);
 void destroy_matrix(Matrix *matrix);

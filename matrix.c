@@ -396,3 +396,24 @@ float max(Matrix *matrix) {
 
     return max;
 }
+
+Matrix3D *create_matrix_3d(int depth) {
+    Matrix3D *matrix = malloc(sizeof(Matrix3D));
+    matrix->depth = depth;
+    matrix->data = malloc(sizeof(Matrix *) * depth);
+    for (int i = 0; i < depth; i++) {
+        matrix->data[i] = NULL;
+    }
+    return matrix;
+}
+
+void destroy_matrix_3d(Matrix3D *matrix) {
+    if (matrix == NULL) {
+        return;
+    }
+    for (int i = 0; i < matrix->depth; i++) {
+        destroy_matrix(matrix->data[i]);
+    }
+    free(matrix);
+    matrix = NULL;
+}

@@ -42,7 +42,7 @@ Layer *create_dense_layer_l(int input_size, int output_size, Activation activati
 
 // conv
 
-Layer *create_conv2d_layer_l(int input_count, int filter_count, int stride, int padding, int kernel_size, int input_size, Activation activation, float epsilon, float decay_rate);
+Layer *create_conv2d_layer_l(int output_size, int input_count, int filter_count, int stride, int padding, int kernel_size, int input_size, Activation activation, float epsilon, float decay_rate);
 
 // maxpool
 

@@ -6,25 +6,24 @@
 
 int main() {
     Network *network;
-    network = create_network(4);
+    srand(time(NULL));
+    network = create_network(3);
     // we are going for mnist
-    add_layer(network, create_conv2d_layer_l(1, 32, 1, 2, 5, 32, RELU, 0.01, 0.01));
-    // output is now 32x32x32
-    add_layer(network, create_maxpool_layer_l(32, 32, 2, 2));
-    // output is now 16x16x32
-    add_layer(network, create_flatten_layer_l(16, 32));
-    // now its 1x(32 * 16 * 16)
-    add_layer(network, create_dense_layer_l(8192, 10, SOFTMAX, 0.0, 0.0));
-    // now its 1x10
+    add_layer(network, create_conv2d_layer_l(5, 1, 1, 1, 1, 3, 7, RELU, 0.01, 0.01));
+    // output is now 1x5x5
+    add_layer(network, create_flatten_layer_l(5, 1));
+    // now its 1x25
+    add_layer(network, create_dense_layer_l(25, 2, SIGMOID, 0.1, 0.1));
+    // now its 1x1
 
-    Matrix *input = from_image("tests/smile.png");
+    Matrix *input = from_image("tests/small.png");
     print_matrix(input);
 
     Matrix *output = forward(network, input);
     print_matrix(output);
 
     for (int i = 0; i < 1000; i++) {
-        float loss = train_input(network, input, create_matrix_from_array(1, 10, (float[]) {1, 0, 0, 0, 0, 0, 0, 0, 0, 0}), 0.01);
+        float loss = train_input(network, input, create_matrix_from_array(1, 1, (float[]) {0.5, 0.5}), 0.01);
         if (i % 100 == 0) {
             printf("loss: %f\n", loss);
         }
