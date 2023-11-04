@@ -7,13 +7,17 @@
 int main() {
     Network *network;
     srand(time(NULL));
-    network = create_network(4);
+    network = create_network(5);
     // we are going for mnist
+    float learning_rate = 0.001f;
+    float epsilon = 0.00000001f;
+    float decay = 0.01f;
+
     add_layer(network, create_flatten_layer_l(28, 1));
-    add_layer(network, create_dense_layer_l(784, 1000, SIGMOID, 0.1, 0.1));
-    add_layer(network, create_dense_layer_l(1000, 1000, SIGMOID, 0.1, 0.1));
-    add_layer(network, create_dense_layer_l(1000, 100, SIGMOID, 0.1, 0.1));
-    add_layer(network, create_dense_layer_l(100, 10, SIGMOID, 0.1, 0.1));
+    add_layer(network, create_dense_layer_l(784, 1000, SIGMOID, epsilon, decay));
+    add_layer(network, create_dense_layer_l(1000, 1000, RELU, epsilon, decay));
+    add_layer(network, create_dense_layer_l(1000, 100, RELU, epsilon, decay));
+    add_layer(network, create_dense_layer_l(100, 10, SIGMOID, epsilon, decay));
 
     Matrix *one = from_image("tests/mnist_my/one.png");
     Matrix *one_expected = create_matrix_from_array(1, 10, (float []) {1,0,0,0,0,0,0,0,0,0});
@@ -49,7 +53,13 @@ int main() {
     add_data(mnist_my_dataset, nine, nine_expected);
     add_data(mnist_my_dataset, zero, zero_expected);
 
-    train_dataset(network, mnist_my_dataset, 1000, 0.1f);
+    Matrix *output = forward(network, one);
+    printf("output:\n");
+    print_matrix(output);
+
+    printf("loss: %f\n", calc_loss(output, one_expected));
+
+    train_dataset(network, mnist_my_dataset, 1000, learning_rate);
 
     destroy_dataset(mnist_my_dataset);
     destroy_network(network);

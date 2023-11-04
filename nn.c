@@ -180,7 +180,6 @@ void train_dataset(Network *network, Dataset *dataset, int epochs, float learnin
             Matrix *input = dataset->inputs[j];
             Matrix *expected = dataset->expected[j];
             float loss = train_input(network, input, expected, learning_rate);
-            printf("%f", loss);
             total_loss += loss;
         }
 
