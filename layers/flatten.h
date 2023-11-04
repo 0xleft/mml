@@ -16,5 +16,5 @@ typedef struct FlattenLayer FlattenLayer;
 
 FlattenLayer *create_flatten_layer(int input_size, int input_count);
 void destroy_flatten_layer(FlattenLayer *layer);
-Matrix *forward_flatten(FlattenLayer *layer, Matrix **input);
-Matrix **backward_flatten(FlattenLayer *layer, Matrix *loss_gradient);
+Matrix *forward_flatten(FlattenLayer *layer, Matrix3D *input);
+Matrix3D *backward_flatten(FlattenLayer *layer, Matrix *loss_gradient);

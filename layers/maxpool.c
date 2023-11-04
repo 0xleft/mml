@@ -11,9 +11,9 @@ MaxPoolLayer *create_maxpool_layer(int input_size, int input_count, int stride, 
     layer->output_size = (input_size - kernel_size + 2 * 0) / stride + 1;
     layer->stride = stride;
     layer->kernel_size = kernel_size;
-    layer->input = malloc(sizeof(Matrix *) * input_count);
-    layer->output = malloc(sizeof(Matrix *) * input_count);
-    layer->mask = malloc(sizeof(Matrix *) * input_count);
+    layer->input = create_matrix_3d(input_count);
+    layer->output = create_matrix_3d(input_count);
+    layer->mask = create_matrix_3d(input_count);
     return layer;
 }
 
@@ -21,14 +21,9 @@ void destroy_maxpool_layer(MaxPoolLayer *layer) {
     if (layer == NULL) {
         return;
     }
-    for (int i = 0; i < layer->input_count; i++) {
-        destroy_matrix(layer->input[i]);
-        destroy_matrix(layer->output[i]);
-        destroy_matrix(layer->mask[i]);
-    }
-    free(layer->input);
-    free(layer->output);
-    free(layer->mask);
+    destroy_matrix_3d(layer->input);
+    destroy_matrix_3d(layer->output);
+    destroy_matrix_3d(layer->mask);
     free(layer);
     layer = NULL;
 }
@@ -63,17 +58,17 @@ Matrix *forward_maxpool_single(MaxPoolLayer *layer, Matrix *input, int index) {
     }
 
 
-    layer->mask[index] = mask;
+    layer->mask->data[index] = mask;
     return result;
 }
 
-Matrix **forward_maxpool(MaxPoolLayer *layer, Matrix **input) {
-    Matrix **output = malloc(sizeof(Matrix *) * layer->input_count);
+Matrix3D *forward_maxpool(MaxPoolLayer *layer, Matrix3D *input) {
+    Matrix3D *output = create_matrix_3d(layer->input_count);
 
     for (int i = 0; i < layer->input_count; i++) {
-        output[i] = forward_maxpool_single(layer, input[i], i);
-        layer->input[i] = copy_matrix(input[i]);
-        layer->output[i] = copy_matrix(output[i]);
+        output->data[i] = forward_maxpool_single(layer, input->data[i], i);
+        layer->input->data[i] = copy_matrix(input->data[i]);
+        layer->output->data[i] = copy_matrix(output->data[i]);
     }
 
     return output;
@@ -89,7 +84,7 @@ Matrix *backward_maxpool_single(MaxPoolLayer *layer, Matrix *loss_gradient, int 
 
             for (int k = i * layer->stride; k < i * layer->stride + layer->kernel_size; k++) {
                 for (int p = j * layer->stride; p < j * layer->stride + layer->kernel_size; p++) {
-                    dout->data[k][p] = layer->mask[index]->data[k][p] * d_X;
+                    dout->data[k][p] = layer->mask->data[index]->data[k][p] * d_X;
                 }
             }
         }
@@ -98,12 +93,11 @@ Matrix *backward_maxpool_single(MaxPoolLayer *layer, Matrix *loss_gradient, int 
     return dout;
 }
 
-Matrix **backward_maxpool(MaxPoolLayer *layer, Matrix **loss_gradient) {
-    Matrix **dout = malloc(sizeof(Matrix *) * layer->input_count);
+Matrix3D *backward_maxpool(MaxPoolLayer *layer, Matrix3D *loss_gradient) {
+    Matrix3D *dout = create_matrix_3d(layer->input_count);
 
     for (int i = 0; i < layer->input_count; i++) {
-        dout[i] = backward_maxpool_single(layer, loss_gradient[i], i);
-        destroy_matrix(loss_gradient[i]);
+        dout->data[i] = backward_maxpool_single(layer, loss_gradient->data[i], i);
     }
 
     return dout;

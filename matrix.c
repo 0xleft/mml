@@ -185,7 +185,7 @@ Matrix *copy_matrix(Matrix *matrix) {
 
 void destroy_matrix(Matrix *matrix) {
     if (matrix == NULL) {
-        printf("matrix is null\n");
+        // printf("matrix is null\n");
         return;
     }
     if (matrix->data == NULL) {

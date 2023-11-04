@@ -1,4 +1,4 @@
-# set -e
+set -e
 
 echo "Running... build at `date`"
 

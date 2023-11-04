@@ -11,9 +11,9 @@ struct MaxPoolLayer {
     int kernel_size;
     int input_size;
     int output_size;
-    Matrix **input;
-    Matrix **output;
-    Matrix **mask;
+    Matrix3D *input;
+    Matrix3D *output;
+    Matrix3D *mask;
     int input_count;
 };
 
@@ -21,5 +21,5 @@ typedef struct MaxPoolLayer MaxPoolLayer;
 
 MaxPoolLayer *create_maxpool_layer(int input_size, int input_count, int stride, int kernel_size);
 void destroy_maxpool_layer(MaxPoolLayer *layer);
-Matrix **forward_maxpool(MaxPoolLayer *layer, Matrix **input);
-Matrix **backward_maxpool(MaxPoolLayer *layer, Matrix **loss_gradient);
+Matrix3D *forward_maxpool(MaxPoolLayer *layer, Matrix3D *input);
+Matrix3D *backward_maxpool(MaxPoolLayer *layer, Matrix3D *loss_gradient);

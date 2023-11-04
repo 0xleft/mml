@@ -24,14 +24,14 @@ void destroy_flatten_layer(FlattenLayer *layer) {
     layer = NULL;
 }
 
-Matrix *forward_flatten(FlattenLayer *layer, Matrix **input) {
+Matrix *forward_flatten(FlattenLayer *layer, Matrix3D *input) {
     Matrix *result = create_matrix(1, layer->input_size * layer->input_size * layer->input_count);
 
     int index = 0;
     for (int i = 0; i < layer->input_count; i++) {
         for (int j = 0; j < layer->input_size; j++) {
             for (int k = 0; k < layer->input_size; k++) {
-                result->data[0][index] = input[i]->data[j][k];
+                result->data[0][index] = input->data[i]->data[j][k];
                 index++;
             }
         }
@@ -40,21 +40,19 @@ Matrix *forward_flatten(FlattenLayer *layer, Matrix **input) {
     return result;
 }
 
-Matrix **backward_flatten(FlattenLayer *layer, Matrix *loss_gradient) {
-    Matrix **result = malloc(sizeof(Matrix *) * layer->input_count);
+Matrix3D *backward_flatten(FlattenLayer *layer, Matrix *loss_gradient) {
+    Matrix3D *result = create_matrix_3d(layer->input_count);
 
     int index = 0;
     for (int i = 0; i < layer->input_count; i++) {
-        result[i] = create_matrix(layer->input_size, layer->input_size);
+        result->data[i] = create_matrix(layer->input_size, layer->input_size);
         for (int j = 0; j < layer->input_size; j++) {
             for (int k = 0; k < layer->input_size; k++) {
-                result[i]->data[j][k] = loss_gradient->data[0][index];
+                result->data[i]->data[j][k] = loss_gradient->data[0][index];
                 index++;
             }
         }
     }
-
-    destroy_matrix(loss_gradient);
 
     return result;
 }
