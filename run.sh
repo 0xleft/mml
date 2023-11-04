@@ -1,19 +1,14 @@
 set -e
 
-echo "Running..."
+echo "Running... build at `date`"
 
-if [ "$1" = "test" ]; then
-    cmake --build . --target test -- -j 4
-    ./test
-    exit 0
+if [ "$1" = "" ]; then
+  echo "No target selected"
+  exit 0
 fi
 
-if [ "$1" = "logic" ]; then
-    cmake --build . --target logic_gates -- -j 4
-    ./logic_gates
-    exit 0
-fi
+cmake .
 
-cmake --build . --target mml -- -j 4
-
-./mml $@
+cmake --build . --target $1 -- -j 4
+./$1
+exit 0

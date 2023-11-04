@@ -15,6 +15,10 @@ Dataset *create_dataset(int max_size) {
 }
 
 void destroy_dataset(Dataset *dataset) {
+    if (dataset == NULL) {
+        printf("dataset is null\n");
+        return;
+    }
     for (int i = 0; i < dataset->size; i++) {
         destroy_matrix(dataset->inputs[i]);
         destroy_matrix(dataset->expected[i]);
@@ -22,6 +26,7 @@ void destroy_dataset(Dataset *dataset) {
     free(dataset->inputs);
     free(dataset->expected);
     free(dataset);
+    dataset = NULL;
 }
 
 void add_data(Dataset *dataset, Matrix *input, Matrix *expected) {
@@ -42,3 +47,4 @@ void print_dataset(Dataset *dataset) {
 Dataset *load_csv(Dataset *dataset) {
     return NULL;
 }
+

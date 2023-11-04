@@ -8,70 +8,6 @@
 #define RED "\033[0;31m"
 #define RESET "\033[0m"
 
-void test_dataset_plus_nn_functions() {
-    printf("test_dataset_plus_nn_functions\n");
-    Dataset *dataset = create_dataset(2);
-
-    Matrix *input1 = create_matrix(1, 2);
-    input1->data[0][0] = 1;
-    input1->data[0][1] = 2;
-
-    Matrix *expected1 = create_matrix(1, 2);
-    expected1->data[0][0] = 0.3f;
-    expected1->data[0][1] = 0.5f;
-
-    Matrix *input2 = create_matrix(1, 2);
-    input2->data[0][0] = 3;
-    input2->data[0][1] = 4;
-
-    Matrix *expected2 = create_matrix(1, 2);
-    expected2->data[0][0] = 0.7f;
-    expected2->data[0][1] = 0.9f;
-
-    add_data(dataset, input1, expected1);
-    add_data(dataset, input2, expected2);
-
-    printf("dataset->size: %d\n", dataset->size);
-    print_dataset(dataset);
-
-    Network *network;
-    int layer_sizes[] = {2, 10, 10, 2};
-    Activation activations[] = {RELU, RELU, SIGMOID};
-    network = create_network(3, layer_sizes, activations);
-
-    // set seed to make results reproducible
-    // srand(12);
-    // randomize_network(network);
-    initialize_weights_xavier_norm(network);
-
-    Matrix *output = forward(network, input1);
-    destroy_matrix(output);
-
-    train_dataset(network, dataset, 10000, 0.1f);
-
-    output = forward(network, input1);
-
-    printf("expected: %f %f\n", expected1->data[0][0], expected1->data[0][1]);
-    printf("output: %f %f\n", output->data[0][0], output->data[0][1]);
-
-    output = forward(network, input2);
-
-    printf("expected: %f %f\n", expected2->data[0][0], expected2->data[0][1]);
-    printf("output: %f %f\n", output->data[0][0], output->data[0][1]);
-
-    if (output->data[0][0] - expected2->data[0][0] > 0.1) {
-        printf(RED"Training failed in datasets 1\n"RESET);
-    }
-
-    if (output->data[0][1] - expected2->data[0][1] > 0.1) {
-        printf(RED"Training failed in datasets 2\n"RESET);
-    }
-
-    destroy_matrix(output);
-    destroy_dataset(dataset);
-    destroy_network(network);
-}
-
 void test_dataset_functions() {
     printf("test_dataset_functions\n");
     Dataset *dataset = create_dataset(2);
@@ -153,6 +89,40 @@ void test_matrix_functions() {
         printf(RED"create_matrix_from_array failed\n"RESET);
     }
 
+    Matrix *l = create_matrix_from_array(2, 2, (float[]) {1, 2, 3, 4});
+    Matrix *m = pad(l, 1);
+    print_matrix(m);
+
+    if (m->data[0][0] != 0 || m->data[0][1] != 0 || m->data[0][2] != 0 || m->data[0][3] != 0 ||
+        m->data[1][0] != 0 || m->data[1][1] != 1 || m->data[1][2] != 2 || m->data[1][3] != 0 ||
+        m->data[2][0] != 0 || m->data[2][1] != 3 || m->data[2][2] != 4 || m->data[2][3] != 0 ||
+        m->data[3][0] != 0 || m->data[3][1] != 0 || m->data[3][2] != 0 || m->data[3][3] != 0) {
+        printf(RED"pad failed\n"RESET);
+    }
+
+    // test loading images
+    Matrix *image = from_image("tests/cross.png");
+    if (image->rows != 32 || image->cols != 32) {
+        printf(RED"from_image failed\n"RESET);
+    }
+
+    // test get_slice
+    Matrix *slice = get_slice(image, 1, 1, 2, 2);
+    if (slice->rows != 2 || slice->cols != 2) {
+        printf(RED"get_slice failed\n"RESET);
+    }
+
+    // test flatten
+    Matrix *flat = flatten(slice);
+    if (flat->rows != 1 || flat->cols != 4) {
+        printf(RED"flatten failed\n"RESET);
+    }
+
+    Matrix *ac = flip(a);
+    if (ac->data[0][0] != 4 || ac->data[0][1] != 3 || ac->data[1][0] != 2 || ac->data[1][1] != 1) {
+        printf(RED"flip failed\n"RESET);
+    }
+
     destroy_matrix(a);
     destroy_matrix(b);
     destroy_matrix(c);
@@ -163,43 +133,39 @@ void test_matrix_functions() {
     destroy_matrix(i);
     destroy_matrix(j);
     destroy_matrix(k);
+    destroy_matrix(l);
+    destroy_matrix(m);
+    destroy_matrix(image);
+    destroy_matrix(slice);
+    destroy_matrix(flat);
+    destroy_matrix(ac);
 }
 
 void test_nn_functions() {
     printf("test_nn_functions\n");
     Network *network;
-    int layer_sizes[] = {3, 10, 10, 2};
-    Activation activations[] = {RELU, RELU, SIGMOID};
-    network = create_network(3, layer_sizes, activations);
+    network = create_network(1);
+    Layer *layer1 = create_dense_layer_l(2, 1, RELU, 0.1f, 0.1f);
 
-    // set seed to make results reproducible
-    // srand(12);
-    // randomize_network(network);
-    initialize_weights_xavier_norm(network);
+    srand(0);
+    add_layer(network, layer1);
 
-    Matrix *input = create_matrix(1, 2);
-    input->data[0][0] = 1;
-    input->data[0][1] = 2;
-    input->data[0][2] = 1;
+    Matrix *input = create_matrix_from_array(1, 2, (float[]) {1, 2});
+    Matrix *expected = create_matrix_from_array(1, 1, (float[]) {0.1f});
 
-    Matrix *expected = create_matrix(1, 2);
-    expected->data[0][0] = 0.3f;
-    expected->data[0][1] = 0.5f;
+    print_matrix(network->layers[0]->layer.dense->weights);
 
     Matrix *output = forward(network, input);
-    destroy_matrix(output);
+    print_matrix(output);
 
-    for (int i = 0; i < 1000; i++) {
+    for (int i = 0; i < 10000; i++)
         train_input(network, input, expected, 0.1f);
-    }
 
     output = forward(network, input);
+    print_matrix(output);
 
-    printf("expected: %f %f\n", expected->data[0][0], expected->data[0][1]);
-    printf("output: %f %f\n", output->data[0][0], output->data[0][1]);
-
-    if (output->data[0][0] - expected->data[0][0] > 0.1) {
-        printf(RED"Training failed\n"RESET);
+    if (output->data[0][0] - expected->data[0][0] > 0.1f) {
+        printf(RED"train_input failed\n"RESET);
     }
 
     destroy_matrix(input);
@@ -210,9 +176,9 @@ void test_nn_functions() {
 
 int main() {
     test_matrix_functions();
-    test_nn_functions();
     test_dataset_functions();
-    test_dataset_plus_nn_functions();
+    test_nn_functions();
+    printf("done\n");
 
     return 0;
 }

@@ -9,7 +9,20 @@ add_executable(mml main.c
         matrix.c
         matrix.h
         data.c
-        data.h)
+        data.h
+        layers.c
+        layers.h
+        layers/dense.c
+        layers/dense.h
+        layers/conv2d.c
+        layers/conv2d.h
+        layers/common.c
+        layers/common.h
+        layers/maxpool.c
+        layers/maxpool.h
+        layers/flatten.c
+        layers/flatten.h
+)
 
 add_executable(test test.c
         nn.c
@@ -17,7 +30,20 @@ add_executable(test test.c
         matrix.c
         matrix.h
         data.c
-        data.h)
+        data.h
+        layers.c
+        layers.h
+        layers/dense.c
+        layers/dense.h
+        layers/conv2d.c
+        layers/conv2d.h
+        layers/common.c
+        layers/common.h
+        layers/maxpool.c
+        layers/maxpool.h
+        layers/flatten.c
+        layers/flatten.h
+)
 
 add_executable(logic_gates logic.c
         nn.c
@@ -25,9 +51,52 @@ add_executable(logic_gates logic.c
         matrix.c
         matrix.h
         data.c
-        data.h)
+        data.h
+        layers.c
+        layers.h
+        layers/dense.c
+        layers/dense.h
+        layers/conv2d.c
+        layers/conv2d.h
+        layers/common.c
+        layers/common.h
+        layers/maxpool.c
+        layers/maxpool.h
+        layers/flatten.c
+        layers/flatten.h
+)
+
+add_executable(conv conv.c
+        nn.c
+        nn.h
+        matrix.c
+        matrix.h
+        data.c
+        data.h
+        layers.c
+        layers.h
+        layers/dense.c
+        layers/dense.h
+        layers/conv2d.c
+        layers/conv2d.h
+        layers/common.c
+        layers/common.h
+        layers/maxpool.c
+        layers/maxpool.h
+        layers/flatten.c
+        layers/flatten.h
+)
 
 # include math
 target_link_libraries(mml m)
 target_link_libraries(test m)
 target_link_libraries(logic_gates m)
+target_link_libraries(conv m)
+
+# include libpng
+find_package(PNG REQUIRED)
+target_link_libraries(mml ${PNG_LIBRARY})
+target_link_libraries(test ${PNG_LIBRARY})
+target_link_libraries(logic_gates ${PNG_LIBRARY})
+target_link_libraries(conv ${PNG_LIBRARY})
+
