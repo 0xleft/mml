@@ -54,5 +54,7 @@ Matrix **backward_flatten(FlattenLayer *layer, Matrix *loss_gradient) {
         }
     }
 
+    destroy_matrix(loss_gradient);
+
     return result;
 }
