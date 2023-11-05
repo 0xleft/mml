@@ -63,10 +63,10 @@ Matrix *forward_maxpool_single(MaxPoolLayer *layer, Matrix *input, int index) {
 }
 
 Matrix3D *forward_maxpool(MaxPoolLayer *layer, Matrix3D *input) {
-    destroy_matrix_3d(layer->input);
-    destroy_matrix_3d(layer->output);
-    destroy_matrix_3d(layer->mask);
-    layer->mask = create_matrix_3d(layer->input_count);
+    // destroy_matrix_3d(layer->input);
+    // destroy_matrix_3d(layer->output);
+    // destroy_matrix_3d(layer->mask);
+    // layer->mask = create_matrix_3d(layer->input_count);
 
     Matrix3D *output = create_matrix_3d(layer->input_count);
 

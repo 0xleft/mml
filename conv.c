@@ -13,10 +13,10 @@ int main() {
     float epsilon = 0.00000001f;
     float decay = 0.01f;
 
-    add_layer(network, create_flatten_layer_l(28, 1));
-    add_layer(network, create_dense_layer_l(784, 1000, SIGMOID, epsilon, decay));
-    add_layer(network, create_dense_layer_l(1000, 1000, RELU, epsilon, decay));
-    add_layer(network, create_dense_layer_l(1000, 100, RELU, epsilon, decay));
+    add_layer(network, create_conv2d_layer_l(24, 1, 16, 1, 0, 5, 28, RELU, epsilon, decay));
+    add_layer(network, create_maxpool_layer_l(24, 16, 1, 7));
+    add_layer(network, create_flatten_layer_l(18, 16));
+    add_layer(network, create_dense_layer_l(5184, 100, RELU, epsilon, decay));
     add_layer(network, create_dense_layer_l(100, 10, SIGMOID, epsilon, decay));
 
     Matrix *one = from_image("tests/mnist_my/one.png");
@@ -58,6 +58,8 @@ int main() {
     print_matrix(output);
 
     printf("loss: %f\n", calc_loss(output, one_expected));
+
+    printf("training...\n");
 
     train_dataset(network, mnist_my_dataset, 1000, learning_rate);
 

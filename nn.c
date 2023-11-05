@@ -102,18 +102,16 @@ void backward(Network *network, Matrix *expected) {
     Matrix3D *errors = create_matrix_3d(1);
     for (int i = last_layer_index; i >= 0; i--) {
         Layer *layer = network->layers[i];
-        Matrix3D *temp_output = NULL;
-        Matrix3D *temp_errors = NULL;
 
         switch (layer->type) {
             case DENSE:
                 output->data[0] = layer->layer.dense->output;
                 break;
             case CONV2D:
-                temp_output = layer->layer.conv2d->output;
+                output = layer->layer.conv2d->output;
                 break;
             case MAXPOOL:
-                temp_output = layer->layer.maxpool->output;
+                output = layer->layer.maxpool->output;
                 break;
             case FLATTEN:
                 output->data[0] = layer->layer.flatten->output;
@@ -129,27 +127,18 @@ void backward(Network *network, Matrix *expected) {
                 errors->data[0] = backward_dense(layer->layer.dense, errors->data[0]);
                 break;
             case CONV2D:
-                temp_errors = backward_conv2d(layer->layer.conv2d, errors);
+                errors = backward_conv2d(layer->layer.conv2d, errors);
                 break;
             case MAXPOOL:
-                temp_errors = backward_maxpool(layer->layer.maxpool, errors);
+                errors = backward_maxpool(layer->layer.maxpool, errors);
                 break;
             case FLATTEN:
-                temp_errors = backward_flatten(layer->layer.flatten, errors->data[0]);
+                errors = backward_flatten(layer->layer.flatten, errors->data[0]);
                 break;
-        }
-
-        if (temp_output != NULL && temp_output != output) {
-            destroy_matrix_3d(output);
-            output = temp_output;
-        }
-        if (temp_errors != NULL && temp_errors != errors) {
-            destroy_matrix_3d(errors);
-            errors = temp_errors;
         }
     }
 
-    // destroy_matrix_3d(output);
+    //destroy_matrix_3d(output);
     destroy_matrix_3d(errors);
 }
 

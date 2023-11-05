@@ -25,7 +25,7 @@ Conv2DLayer *create_conv2d_layer(int output_size, int input_count, int filter_co
         layer->bias->data[i] = create_matrix(1, layer->output_size);
 
         initialize_weights_xavier_norm(layer->input_size, layer->output_size, layer->weights->data[i]);
-        initialize_weights_xavier_norm(1, layer->output_size, layer->bias->data[i]);
+        // initialize_weights_xavier_norm(1, layer->output_size, layer->bias->data[i]);
     }
     printf("Created weights and bias for %d filters\n", filter_count);
 
@@ -69,17 +69,15 @@ void forward_conv2d_single(Conv2DLayer *layer, Matrix *input, int index) {
 
     layer->input->data[index] = copy_matrix(input);
     layer->output->data[index] = copy_matrix(activated);
-
-    return activated;
 }
 
 // basically we are computing the dot product of the kernel passing over the input
 // stanford talk:
 // https://www.youtube.com/watch?v=bNb2fEVKeEo&
 Matrix3D *forward_conv2d(Conv2DLayer *layer, Matrix3D *input) {
-    destroy_matrix_3d(layer->output);
-    destroy_matrix_3d(layer->input);
-    destroy_matrix_3d(layer->delta);
+    //destroy_matrix_3d(layer->output);
+    //destroy_matrix_3d(layer->input);
+    //destroy_matrix_3d(layer->delta);
 
     for (int i = 0; i < layer->input_count; i++) {
         for (int j = 0; j < layer->filter_count; j++) {
@@ -123,9 +121,9 @@ Matrix *backward_conv2d_single(Conv2DLayer *layer, Matrix *loss_gradient, int fi
     }
 
     // update bias
-    for (int k = 0; k < layer->output_size; k++) {
-        layer->bias->data[filter_index]->data[0][k] -= 1 * dW->data[0][k];
-    }
+    // for (int k = 0; k < layer->output_size; k++) {
+    //     layer->bias->data[filter_index]->data[0][k] -= 1 * dW->data[0][k];
+    // }
 
     destroy_matrix(dW);
     destroy_matrix(padded_input);

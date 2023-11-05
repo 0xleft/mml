@@ -7,8 +7,6 @@ if [ "$1" = "" ]; then
   exit 0
 fi
 
-cmake .
-
 cmake --build . --target $1 -- -j 4
 ./$1
 exit 0
