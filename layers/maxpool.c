@@ -96,7 +96,7 @@ Matrix *backward_maxpool_single(MaxPoolLayer *layer, Matrix *loss_gradient, int 
     }
 
     // todo check
-    destroy_matrix(loss_gradient);
+    // destroy_matrix(loss_gradient);
 
     return dout;
 }

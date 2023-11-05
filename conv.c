@@ -7,41 +7,38 @@
 int main() {
     Network *network;
     srand(time(NULL));
-    network = create_network(5);
+    network = create_network(6);
     // we are going for mnist
-    float learning_rate = 0.001f;
+    float learning_rate = 0.00001f;
     float epsilon = 0.00000001f;
     float decay = 0.01f;
 
-    add_layer(network, create_conv2d_layer_l(24, 1, 16, 1, 0, 5, 28, RELU, epsilon, decay));
-    add_layer(network, create_maxpool_layer_l(24, 16, 1, 7));
-    add_layer(network, create_flatten_layer_l(18, 16));
-    add_layer(network, create_dense_layer_l(5184, 100, RELU, epsilon, decay));
-    add_layer(network, create_dense_layer_l(100, 10, SIGMOID, epsilon, decay));
+    add_layer(network, create_conv2d_layer_l(24, 1, 10, 1, 0, 5, 28, LEAKY_RELU, epsilon, decay));
+    add_layer(network, create_maxpool_layer_l(24, 10, 1, 3));
+    add_layer(network, create_flatten_layer_l(8, 10));
+    add_layer(network, create_dense_layer_l(8 * 8 * 10, 1, SIGMOID, epsilon, decay));
 
     Matrix *one = from_image("tests/mnist_my/one.png");
-    Matrix *one_expected = create_matrix_from_array(1, 10, (float []) {1,0,0,0,0,0,0,0,0,0});
+    Matrix *one_expected = create_matrix_from_array(1, 10, (float []) {1});
     Matrix *two = from_image("tests/mnist_my/two.png");
-    Matrix *two_expected = create_matrix_from_array(1, 10, (float []) {0,1,0,0,0,0,0,0,0,0});
+    Matrix *two_expected = create_matrix_from_array(1, 10, (float []) {1});
     Matrix *three = from_image("tests/mnist_my/three.png");
-    Matrix *three_expected = create_matrix_from_array(1, 10, (float []) {0,0,1,0,0,0,0,0,0,0});
+    Matrix *three_expected = create_matrix_from_array(1, 10, (float []) {1});
     Matrix *four = from_image("tests/mnist_my/four.png");
-    Matrix *four_expected = create_matrix_from_array(1, 10, (float []) {0,0,0,1,0,0,0,0,0,0});
+    Matrix *four_expected = create_matrix_from_array(1, 10, (float []) {1});
     Matrix *five = from_image("tests/mnist_my/five.png");
-    Matrix *five_expected = create_matrix_from_array(1, 10, (float []) {0,0,0,0,1,0,0,0,0,0});
+    Matrix *five_expected = create_matrix_from_array(1, 10, (float []) {0});
     Matrix *six = from_image("tests/mnist_my/six.png");
-    Matrix *six_expected = create_matrix_from_array(1, 10, (float []) {0,0,0,0,0,1,0,0,0,0});
+    Matrix *six_expected = create_matrix_from_array(1, 10, (float []) {0});
     Matrix *seven = from_image("tests/mnist_my/seven.png");
-    Matrix *seven_expected = create_matrix_from_array(1, 10, (float []) {0,0,0,0,0,0,1,0,0,0});
+    Matrix *seven_expected = create_matrix_from_array(1, 10, (float []) {0});
     Matrix *eight = from_image("tests/mnist_my/eight.png");
-    Matrix *eight_expected = create_matrix_from_array(1, 10, (float []) {0,0,0,0,0,0,0,1,0,0});
+    Matrix *eight_expected = create_matrix_from_array(1, 10, (float []) {0});
     Matrix *nine = from_image("tests/mnist_my/nine.png");
-    Matrix *nine_expected = create_matrix_from_array(1, 10, (float []) {0,0,0,0,0,0,0,0,1,0});
+    Matrix *nine_expected = create_matrix_from_array(1, 10, (float []) {0});
     Matrix *zero = from_image("tests/mnist_my/zero.png");
-    Matrix *zero_expected = create_matrix_from_array(1, 10, (float []) {0,0,0,0,0,0,0,0,0,1});
-
+    Matrix *zero_expected = create_matrix_from_array(1, 10, (float []) {1});
     Dataset *mnist_my_dataset = create_dataset(10);
-
     add_data(mnist_my_dataset, one, one_expected);
     add_data(mnist_my_dataset, two, two_expected);
     add_data(mnist_my_dataset, three, three_expected);
@@ -57,11 +54,28 @@ int main() {
     printf("output:\n");
     print_matrix(output);
 
+    print_matrix(network->layers[0]->layer.conv2d->weights->data[0]);
+
     printf("loss: %f\n", calc_loss(output, one_expected));
 
     printf("training...\n");
 
-    train_dataset(network, mnist_my_dataset, 1000, learning_rate);
+    train_dataset(network, mnist_my_dataset, 100, learning_rate);
+
+    printf("trained\n");
+    output = forward(network, one);
+    printf("output1:\n");
+    print_matrix(output);
+
+    output = forward(network, nine);
+    printf("output9:\n");
+    print_matrix(output);
+
+    // conv weights
+    print_matrix(network->layers[0]->layer.conv2d->weights->data[0]);
+
+    // conv bias
+    print_matrix(network->layers[0]->layer.conv2d->bias->data[0]);
 
     destroy_dataset(mnist_my_dataset);
     destroy_network(network);

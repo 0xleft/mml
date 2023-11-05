@@ -125,8 +125,8 @@ float activate(float x, Activation activation) {
             return x > 0 ? x : 0;
         case TANH:
             return tanh(x);
-        case SOFTMAX:
-            return exp(x);
+        case LEAKY_RELU:
+            return x > 0 ? x : 0.01 * x;
     }
 }
 
@@ -148,8 +148,8 @@ float derivative(float x, Activation activation) {
             return x > 0 ? 1 : 0;
         case TANH:
             return 1 - x * x;
-        case SOFTMAX:
-            return x * (1 - x);
+        case LEAKY_RELU:
+            return x > 0 ? 1 : 0.01;
     }
 }
 
