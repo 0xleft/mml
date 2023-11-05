@@ -7,16 +7,17 @@
 int main() {
     Network *network;
     srand(time(NULL));
-    network = create_network(6);
+    network = create_network(5);
     // we are going for mnist
-    float learning_rate = 0.00001f;
+    float learning_rate = 0.01f;
     float epsilon = 0.00000001f;
     float decay = 0.01f;
 
-    add_layer(network, create_conv2d_layer_l(24, 1, 10, 1, 0, 5, 28, LEAKY_RELU, epsilon, decay));
-    add_layer(network, create_maxpool_layer_l(24, 10, 1, 3));
-    add_layer(network, create_flatten_layer_l(8, 10));
-    add_layer(network, create_dense_layer_l(8 * 8 * 10, 1, SIGMOID, epsilon, decay));
+    add_layer(network, create_flatten_layer_l(28, 1));
+    add_layer(network, create_dense_layer_l(784, 1000, RELU, epsilon, decay));
+    add_layer(network, create_dense_layer_l(1000, 1000, SIGMOID, epsilon, decay));
+    add_layer(network, create_dense_layer_l(1000, 250, RELU, epsilon, decay));
+    add_layer(network, create_dense_layer_l(250, 1, SIGMOID, epsilon, decay));
 
     Matrix *one = from_image("tests/mnist_my/one.png");
     Matrix *one_expected = create_matrix_from_array(1, 10, (float []) {1});
@@ -54,8 +55,6 @@ int main() {
     printf("output:\n");
     print_matrix(output);
 
-    print_matrix(network->layers[0]->layer.conv2d->weights->data[0]);
-
     printf("loss: %f\n", calc_loss(output, one_expected));
 
     printf("training...\n");
@@ -70,12 +69,6 @@ int main() {
     output = forward(network, nine);
     printf("output9:\n");
     print_matrix(output);
-
-    // conv weights
-    print_matrix(network->layers[0]->layer.conv2d->weights->data[0]);
-
-    // conv bias
-    print_matrix(network->layers[0]->layer.conv2d->bias->data[0]);
 
     destroy_dataset(mnist_my_dataset);
     destroy_network(network);
