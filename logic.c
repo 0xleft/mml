@@ -15,7 +15,7 @@ void and() {
     add_layer(network, create_dense_layer_l(2, 100, RELU, 0.0001f, 0.00000001f));
     add_layer(network, create_dense_layer_l(100, 100, RELU, 0.0001f, 0.00000001f));
     add_layer(network, create_dense_layer_l(100, 10, RELU, 0.0001f, 0.00000001f));
-    add_layer(network, create_dense_layer_l(10, 1, RELU, 0.0001f, 0.00000001f));
+    add_layer(network, create_dense_layer_l(10, 1, SIGMOID, 0.0001f, 0.00000001f));
 
     Matrix *input1 = create_matrix_from_array(1, 2, (float[]) {0, 0});
     Matrix *input2 = create_matrix_from_array(1, 2, (float[]) {0, 1});
@@ -33,7 +33,7 @@ void and() {
     add_data(dataset, input3, expected3);
     add_data(dataset, input4, expected4);
 
-    train_dataset(network, dataset, 3000, 0.1f);
+    train_dataset(network, dataset, 1000, 0.1f);
 
     Matrix *output1 = forward(network, input1);
     Matrix *output2 = forward(network, input2);
@@ -139,11 +139,27 @@ void xor() {
 }
 
 int main() {
-    printf("running and\n");
-    and();
-    printf("running or\n");
-    or();
-    printf("running xor\n");
-    xor();
+    // prompt user to select a test
+    printf("Select a test:\n");
+    printf("1. and\n");
+    printf("2. or\n");
+    printf("3. xor\n");
+
+    int test;
+    scanf("%d", &test);
+    switch (test) {
+        case 1:
+            and();
+            break;
+        case 2:
+            or();
+            break;
+        case 3:
+            xor();
+            break;
+        default:
+            printf("Invalid test\n");
+            break;
+    }
     return 0;
 }
