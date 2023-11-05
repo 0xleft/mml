@@ -11,8 +11,11 @@
 
 void and() {
     Network *network;
-    network = create_network(1);
-    add_layer(network, create_dense_layer_l(2, 1, RELU, 0.0001f, 0.00000001f));
+    network = create_network(4);
+    add_layer(network, create_dense_layer_l(2, 100, RELU, 0.0001f, 0.00000001f));
+    add_layer(network, create_dense_layer_l(100, 100, RELU, 0.0001f, 0.00000001f));
+    add_layer(network, create_dense_layer_l(100, 10, RELU, 0.0001f, 0.00000001f));
+    add_layer(network, create_dense_layer_l(10, 1, RELU, 0.0001f, 0.00000001f));
 
     Matrix *input1 = create_matrix_from_array(1, 2, (float[]) {0, 0});
     Matrix *input2 = create_matrix_from_array(1, 2, (float[]) {0, 1});

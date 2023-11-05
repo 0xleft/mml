@@ -25,6 +25,8 @@ void destroy_flatten_layer(FlattenLayer *layer) {
 }
 
 Matrix *forward_flatten(FlattenLayer *layer, Matrix3D *input) {
+    destroy_matrix(layer->output);
+
     Matrix *result = create_matrix(1, layer->input_size * layer->input_size * layer->input_count);
 
     int index = 0;
@@ -36,6 +38,9 @@ Matrix *forward_flatten(FlattenLayer *layer, Matrix3D *input) {
             }
         }
     }
+
+    layer->output = copy_matrix(result);
+    // destroy_matrix_3d(input);
 
     return result;
 }
@@ -53,6 +58,8 @@ Matrix3D *backward_flatten(FlattenLayer *layer, Matrix *loss_gradient) {
             }
         }
     }
+
+    // destroy_matrix(loss_gradient);
 
     return result;
 }

@@ -56,27 +56,20 @@ Matrix *forward(Network *network, Matrix *input) {
     // yeah some sunzu shit right here
     Matrix3D *result = create_matrix_3d(1);
     result->data[0] = input;
-    Matrix *res_temp;
-    Matrix3D *big_res_temp;
     for (int i = 0; i < network->layer_count; i++) {
         Layer *layer = network->layers[i];
         switch (layer->type) {
             case DENSE:
-                res_temp = forward_dense(layer->layer.dense, result->data[0]);
-                result->data[0] = res_temp;
+                result->data[0] = forward_dense(layer->layer.dense, result->data[0]);
                 break;
             case CONV2D:
-                big_res_temp = forward_conv2d(layer->layer.conv2d, result);
-                result = big_res_temp;
+                result = forward_conv2d(layer->layer.conv2d, result);
                 break;
             case MAXPOOL:
-                big_res_temp = forward_maxpool(layer->layer.maxpool, result);
-                result = big_res_temp;
+                result = forward_maxpool(layer->layer.maxpool, result);
                 break;
             case FLATTEN:
-                res_temp = forward_flatten(layer->layer.flatten, result);
-                result->data[0] = res_temp;
-                destroy_matrix(res_temp);
+                result->data[0] = forward_flatten(layer->layer.flatten, result);
                 break;
         }
     }
@@ -107,19 +100,20 @@ void backward(Network *network, Matrix *expected) {
     int last_layer_index = network->layer_count - 1;
     Matrix3D *output = create_matrix_3d(1);
     Matrix3D *errors = create_matrix_3d(1);
-    Matrix *res_temp;
-    Matrix3D *big_res_temp;
     for (int i = last_layer_index; i >= 0; i--) {
         Layer *layer = network->layers[i];
+        Matrix3D *temp_output = NULL;
+        Matrix3D *temp_errors = NULL;
+
         switch (layer->type) {
             case DENSE:
                 output->data[0] = layer->layer.dense->output;
                 break;
             case CONV2D:
-                output = layer->layer.conv2d->output;
+                temp_output = layer->layer.conv2d->output;
                 break;
             case MAXPOOL:
-                output = layer->layer.maxpool->output;
+                temp_output = layer->layer.maxpool->output;
                 break;
             case FLATTEN:
                 output->data[0] = layer->layer.flatten->output;
@@ -127,29 +121,36 @@ void backward(Network *network, Matrix *expected) {
         }
 
         if (i == last_layer_index) {
-            errors = create_matrix_3d(1);
             errors->data[0] = calc_loss_gradient(output->data[0], expected);
         }
 
         switch (layer->type) {
             case DENSE:
-                res_temp = backward_dense(layer->layer.dense, errors->data[0]);
-                errors->data[0] = res_temp;
+                errors->data[0] = backward_dense(layer->layer.dense, errors->data[0]);
                 break;
             case CONV2D:
-                big_res_temp = backward_conv2d(layer->layer.conv2d, errors);
-                errors = big_res_temp;
+                temp_errors = backward_conv2d(layer->layer.conv2d, errors);
                 break;
             case MAXPOOL:
-                big_res_temp = backward_maxpool(layer->layer.maxpool, errors);
-                errors = big_res_temp;
+                temp_errors = backward_maxpool(layer->layer.maxpool, errors);
                 break;
             case FLATTEN:
-                big_res_temp = backward_flatten(layer->layer.flatten, errors->data[0]);
-                errors = big_res_temp;
+                temp_errors = backward_flatten(layer->layer.flatten, errors->data[0]);
                 break;
         }
+
+        if (temp_output != NULL && temp_output != output) {
+            destroy_matrix_3d(output);
+            output = temp_output;
+        }
+        if (temp_errors != NULL && temp_errors != errors) {
+            destroy_matrix_3d(errors);
+            errors = temp_errors;
+        }
     }
+
+    // destroy_matrix_3d(output);
+    destroy_matrix_3d(errors);
 }
 
 void update(Network *network, float learning_rate) {

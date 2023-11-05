@@ -189,8 +189,12 @@ void destroy_matrix(Matrix *matrix) {
         return;
     }
     if (matrix->data == NULL) {
-        printf("data is null\n");
         return;
+    }
+    // fix for memory leak
+    for (int i = 0; i < matrix->rows; i++) {
+        free(matrix->data[i]);
+        matrix->data[i] = NULL;
     }
     free(matrix->data);
     matrix->data = NULL;

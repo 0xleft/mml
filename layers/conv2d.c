@@ -77,6 +77,10 @@ void forward_conv2d_single(Conv2DLayer *layer, Matrix *input, int index) {
 // stanford talk:
 // https://www.youtube.com/watch?v=bNb2fEVKeEo&
 Matrix3D *forward_conv2d(Conv2DLayer *layer, Matrix3D *input) {
+    destroy_matrix_3d(layer->output);
+    destroy_matrix_3d(layer->input);
+    destroy_matrix_3d(layer->delta);
+
     for (int i = 0; i < layer->input_count; i++) {
         for (int j = 0; j < layer->filter_count; j++) {
             forward_conv2d_single(layer, input->data[i], i * layer->filter_count + j);

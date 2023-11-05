@@ -39,6 +39,10 @@ void destroy_dense_layer(DenseLayer *layer) {
 }
 
 Matrix *forward_dense(DenseLayer *layer, Matrix *input) {
+    destroy_matrix(layer->input);
+    destroy_matrix(layer->output);
+    destroy_matrix(layer->delta);
+
     Matrix *res_dot = dot(input, layer->weights);
     Matrix *res_add = add(res_dot, layer->bias);
     Matrix *result = apply(res_add, layer->activation);
@@ -47,6 +51,8 @@ Matrix *forward_dense(DenseLayer *layer, Matrix *input) {
 
     layer->input = copy_matrix(input);
     layer->output = copy_matrix(result);
+
+    // destroy_matrix(input);
 
     return result;
 }
@@ -61,7 +67,10 @@ Matrix *backward_dense(DenseLayer *layer, Matrix *loss_gradient) {
     layer->delta = delta;
 
     // downstream gradient
-    Matrix *downstream_gradient = dot(delta, transpose(layer->weights));
+    Matrix *t_weights = transpose(layer->weights);
+    Matrix *downstream_gradient = dot(delta, t_weights);
+
+    destroy_matrix(t_weights);
 
     return downstream_gradient;
 }
